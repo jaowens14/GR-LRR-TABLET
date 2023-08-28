@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:web_socket_channel/io.dart';
 import 'dart:convert';
+import 'dart:async'; // Import the async library for Timer
 
 void main() {
   runApp(MaterialApp(
@@ -18,8 +20,12 @@ class _WebSocketPageState extends State<WebSocketPage> {
   late WebSocketChannel _channel;
   bool _isConnected = false;
   TextEditingController _textFieldController = TextEditingController();
-  String _receivedData = '';
+  Map<String, dynamic> _receivedData = {}; // Store parsed JSON data
   int command = 0;
+  int ultrasonic = 0;
+  bool relay = false;
+
+  late Timer _pingTimer; // Timer for sending pings
 
   @override
   void initState() {
@@ -29,15 +35,17 @@ class _WebSocketPageState extends State<WebSocketPage> {
 
   Future<void> _connectWebSocket() async {
     try {
-      final channel =
-          WebSocketChannel.connect(Uri.parse('ws://192.168.3.1:8080'));
+      final channel = IOWebSocketChannel.connect(
+          Uri.parse('ws://192.168.3.1:8080'),
+          pingInterval: Duration(milliseconds: 500));
       _channel = channel;
 
       _channel.stream.listen(
         (data) {
           print('Received: $data');
+          final parsedData = jsonDecode(data);
           setState(() {
-            _receivedData = data;
+            _receivedData = parsedData;
           });
         },
         onDone: () {
@@ -71,6 +79,8 @@ class _WebSocketPageState extends State<WebSocketPage> {
     final Map<String, dynamic> packet = {
       'stepper_command': command,
       'stepper_speed': speed,
+      'ultrasonic_value': ultrasonic,
+      'relay_flag': relay,
     };
 
     final String jsonPacket = jsonEncode(packet);
@@ -83,6 +93,7 @@ class _WebSocketPageState extends State<WebSocketPage> {
 
   @override
   void dispose() {
+    _pingTimer.cancel(); // Cancel the ping timer
     _channel.sink.close();
     _textFieldController.dispose();
     super.dispose();
@@ -101,41 +112,66 @@ class _WebSocketPageState extends State<WebSocketPage> {
             Text(_isConnected ? 'Connected' : 'Disconnected'),
             TextField(
               controller: _textFieldController,
-              decoration: InputDecoration(labelText: 'Enter Data'),
+              decoration: InputDecoration(labelText: 'Set Speed'),
             ),
             ElevatedButton(
               onPressed: () {
-                _sendJsonPacket;
                 command = 0;
+                _sendJsonPacket();
               },
               child: Text('Send Stop Command'),
             ),
             ElevatedButton(
               onPressed: () {
-                _sendJsonPacket;
                 command = 1;
+                _sendJsonPacket();
               },
               child: Text('Send Forward Command'),
             ),
             ElevatedButton(
               onPressed: () {
-                _sendJsonPacket;
                 command = 2;
+                _sendJsonPacket();
               },
               child: Text('Send Backward Command'),
             ),
-            ElevatedButton(
-              onPressed: () => _sendJsonPacket,
-              child: Text('Send F Command'),
-            ),
+
             ElevatedButton(
               onPressed: _sendJsonPacket,
               child: Text('Send JSON Packet'),
             ),
             SizedBox(height: 20),
-            Text('Received JSON Packet:'),
-            SizedBox(height: 5),
-            Text(_receivedData),
+
+            ElevatedButton(
+              onPressed: () {
+                relay = true;
+                _sendJsonPacket();
+              },
+              child: Text('E-STOP'),
+            ),
+            SizedBox(height: 20),
+
+            ElevatedButton(
+              onPressed: () {
+                relay = false;
+                _sendJsonPacket();
+              },
+              child: Text('RESET E-STOP'),
+            ),
+            SizedBox(height: 20),
+
+            // Display Sent JSON Packet Fields
+            Text('Sent JSON Packet:'),
+            Text('Stepper Command: $command'),
+            Text('Stepper Speed: ${_textFieldController.text}'),
+            Text('========================================='),
+
+            // Display Received JSON Packet Fields
+            if (_receivedData.isNotEmpty) Text('Received JSON Packet Fields:'),
+            Text('Stepper Command: ${_receivedData['stepper_command']}'),
+            Text('Stepper Speed: ${_receivedData['stepper_speed']}'),
+            Text('Ultrasonic Value: ${_receivedData['ultrasonic_value']}'),
+            Text('Relay Flag: ${_receivedData['relay_flag']}'),
           ],
         ),
       ),
