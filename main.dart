@@ -144,7 +144,7 @@ class _WebSocketPageState extends State<WebSocketPage> {
 
             ElevatedButton(
               onPressed: () {
-                relay = false;
+                relay = true;
                 _sendJsonPacket();
               },
               child: Text('E-STOP'),
