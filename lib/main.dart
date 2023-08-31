@@ -3,6 +3,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/io.dart';
 import 'dart:convert';
 import 'dart:async'; // Import the async library for Timer
+import 'package:fl_chart/fl_chart.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -37,7 +38,7 @@ class _WebSocketPageState extends State<WebSocketPage> {
     try {
       final channel = IOWebSocketChannel.connect(
           Uri.parse('ws://192.168.3.1:8080'),
-          pingInterval: Duration(milliseconds: 500));
+          pingInterval: Duration(milliseconds: 250));
       _channel = channel;
 
       _channel.stream.listen(
