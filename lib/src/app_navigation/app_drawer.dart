@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:gr_lrr/src/about/about.dart';
-import 'package:gr_lrr/src/device%20settings/device_settings.dart';
-import 'package:gr_lrr/src/navigation/title_setter.dart';
-import 'package:gr_lrr/src/status/status.dart';
+import 'package:gr_lrr/src/app_about/about.dart';
+import 'package:gr_lrr/src/device_settings/device_settings.dart';
+import 'package:gr_lrr/src/app_navigation/title_setter.dart';
 import 'package:gr_lrr/src/home/home.dart';
 import 'package:provider/provider.dart';
 
@@ -11,8 +10,7 @@ import '../app_settings/settings_view.dart';
 class MyDrawer extends StatelessWidget {
   static const headerTitle = "GR-LRR";
   static const homeTitle = "HUD";
-  static const deviceTitle = "Device Status";
-  static const deviceSettingTitle = "Device Settings";
+  static const deviceSettingTitle = "Device Status and Settings";
   static const appSettingTitle = "App Settings";
   static const aboutTitle = "About";
 
@@ -34,14 +32,6 @@ class MyDrawer extends StatelessWidget {
               Provider.of<AppBarTitleNotifier>(context, listen: false)
                   .setTitle(homeTitle);
               Navigator.of(context).pushNamed(MyHome.routeName);
-            },
-          ),
-          ListTile(
-            title: const Text(deviceTitle),
-            onTap: () {
-              Provider.of<AppBarTitleNotifier>(context, listen: false)
-                  .setTitle(deviceTitle);
-              Navigator.of(context).pushNamed(MyStatus.routeName);
             },
           ),
           ListTile(

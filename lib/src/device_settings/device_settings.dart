@@ -12,6 +12,8 @@ class DeviceSettings extends StatelessWidget {
     return Scaffold(
         appBar: const MyAppBar(),
         drawer: MyDrawer(),
-        body: const Text("Device Settings"));
+        body: const Center(
+          child: Text("Device Status and Settings"),
+        ));
   }
 }

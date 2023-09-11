@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:gr_lrr/src/status/status.dart';
 import 'package:gr_lrr/src/home/home.dart';
 
 import 'package:gr_lrr/src/about/about.dart';
+import 'package:gr_lrr/src/video_stream/video_stream.dart';
 import 'app_settings/settings_controller.dart';
 import 'app_settings/settings_view.dart';
-import 'package:gr_lrr/src/device settings/device_settings.dart';
+import 'package:gr_lrr/src/device_settings/device_settings.dart';
 
 /// The Widget that configures your application.
 class MyApp extends StatelessWidget {
   const MyApp({
     super.key,
     required this.settingsController,
+    required this.videoStream,
   });
 
   final SettingsController settingsController;
+  final VideoStream videoStream;
 
   @override
   Widget build(BuildContext context) {
@@ -70,10 +72,7 @@ class MyApp extends StatelessWidget {
               builder: (BuildContext context) {
                 switch (routeSettings.name) {
                   case MyHome.routeName:
-                    return MyHome();
-
-                  case MyStatus.routeName:
-                    return const MyStatus();
+                    return MyHome(videoStream: videoStream);
 
                   case DeviceSettings.routeName:
                     return const DeviceSettings();
@@ -85,7 +84,7 @@ class MyApp extends StatelessWidget {
                     return MyAbout();
 
                   default:
-                    return MyHome();
+                    return MyHome(videoStream: videoStream);
                 }
               },
             );
