@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gr_lrr/src/app_about/about.dart';
 import 'package:gr_lrr/src/device_settings/device_settings.dart';
 import 'package:gr_lrr/src/app_navigation/title_setter.dart';
-import 'package:gr_lrr/src/home/home.dart';
+import 'package:gr_lrr/src/app_home/home.dart';
 import 'package:provider/provider.dart';
 
 import '../app_settings/settings_view.dart';

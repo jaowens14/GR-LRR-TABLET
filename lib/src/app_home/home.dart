@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:gr_lrr/src/navigation/app_bar.dart';
-import 'package:gr_lrr/src/navigation/drawer.dart';
+import 'package:gr_lrr/src/app_navigation/app_bar.dart';
+import 'package:gr_lrr/src/app_navigation/app_drawer.dart';
+import 'package:gr_lrr/src/device_communications/communications.dart';
 import 'package:gr_lrr/src/video_stream/video_stream.dart';
 
 class MyHome extends StatefulWidget {
@@ -33,10 +34,10 @@ class _MyHomeState extends State<MyHome> {
       body: Center(
         child: Column(children: [
           Expanded(
-            flex: 2,
+            flex: 1,
             child: _videoStream,
           ),
-          Expanded(flex: 2, child: Text("test")),
+          Expanded(flex: 2, child: MyCommunication()),
         ]),
       ), // Use the videoStream from the widget parameter
     );

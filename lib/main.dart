@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'src/app.dart';
 import 'src/app_settings/settings_controller.dart';
 import 'src/app_settings/settings_service.dart';
-import 'package:gr_lrr/src/navigation/title_setter.dart';
+import 'package:gr_lrr/src/app_navigation/title_setter.dart';
 
 void main() async {
   // Set up the SettingsController, which will glue user settings to multiple

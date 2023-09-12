@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:gr_lrr/src/home/home.dart';
+import 'package:gr_lrr/src/app_home/home.dart';
 
-import 'package:gr_lrr/src/about/about.dart';
+import 'package:gr_lrr/src/app_about/about.dart';
 import 'package:gr_lrr/src/video_stream/video_stream.dart';
 import 'app_settings/settings_controller.dart';
 import 'app_settings/settings_view.dart';

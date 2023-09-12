@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:gr_lrr/src/video_stream/ipaddress_port.dart';
+import 'package:gr_lrr/src/video_stream/server_ws_ip.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/status.dart' as status;
 
@@ -34,8 +34,8 @@ class WebSocket {
 
   /// Connects the current application to a websocket
   void connect() async {
-    _channel =
-        WebSocketChannel.connect(Uri.parse(WebsocketAddress.videoWebsocketURL));
+    _channel = WebSocketChannel.connect(
+        Uri.parse(ServerWebsocketAddress.videoWebsocketURL));
   }
 
   /// Disconnects the current application from a websocket

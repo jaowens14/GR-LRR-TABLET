@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gr_lrr/src/navigation/title_setter.dart';
+import 'package:gr_lrr/src/app_navigation/title_setter.dart';
 import 'package:provider/provider.dart';
 import 'package:gr_lrr/src/app_settings/settings_view.dart';
 

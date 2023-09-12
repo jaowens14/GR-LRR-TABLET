@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 
 import 'package:gr_lrr/src/video_stream/websocket.dart';
-import 'package:gr_lrr/src/video_stream/ipaddress_port.dart';
+import 'package:gr_lrr/src/video_stream/server_ws_ip.dart';
 import 'package:gr_lrr/src/video_stream/styles.dart';
 
 class VideoStream extends StatefulWidget {
@@ -14,7 +14,7 @@ class VideoStream extends StatefulWidget {
 }
 
 class _VideoStreamState extends State<VideoStream> {
-  final WebSocket _socket = WebSocket(WebsocketAddress.videoWebsocketURL);
+  final WebSocket _socket = WebSocket(ServerWebsocketAddress.videoWebsocketURL);
   bool _isConnected = false;
 
   void connect(BuildContext context) async {

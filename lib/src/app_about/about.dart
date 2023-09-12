@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:gr_lrr/src/navigation/app_bar.dart';
-import 'package:gr_lrr/src/navigation/drawer.dart';
+import 'package:gr_lrr/src/app_navigation/app_bar.dart';
+import 'package:gr_lrr/src/app_navigation/app_drawer.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class MyAbout extends StatefulWidget {
