@@ -32,6 +32,29 @@ class _VideoStreamState extends State<VideoStream> {
     });
   }
 
+  // Define the desired width and height for the resized image.
+  static const double desiredWidth = 560.0;
+  static const double desiredHeight = 420.0;
+
+  // Function to resize the image.
+  Widget _resizeImage(Uint8List imageData) {
+    final image = Image.memory(
+      imageData,
+      gaplessPlayback: true,
+      excludeFromSemantics: true,
+    );
+
+    // Resize the image using the `FittedBox` widget.
+    return FittedBox(
+      child: SizedBox(
+        width: desiredWidth,
+        height: desiredHeight,
+        child: image,
+      ),
+      fit: BoxFit.cover, // You can choose the desired fit mode.
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,14 +95,12 @@ class _VideoStreamState extends State<VideoStream> {
                           );
                         }
                         //? Working for single frames
-                        return Image.memory(
+                        return _resizeImage(
                           Uint8List.fromList(
                             base64Decode(
                               (snapshot.data.toString()),
                             ),
                           ),
-                          gaplessPlayback: true,
-                          excludeFromSemantics: true,
                         );
                       },
                     )

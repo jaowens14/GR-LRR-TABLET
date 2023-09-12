@@ -46,6 +46,9 @@ class _WebSocketPageState extends State<MyCommunication> {
           _reconnectWebSocket();
         },
         onError: (error) {
+          setState(() {
+            _isConnected = false;
+          });
           print('WebSocket error: $error');
           _reconnectWebSocket();
         },
@@ -99,69 +102,117 @@ class _WebSocketPageState extends State<MyCommunication> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(_isConnected ? 'Connected' : 'Disconnected'),
-          TextField(
-            controller: _textFieldController,
-            decoration: InputDecoration(labelText: 'Set Speed'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              command = 0;
-              _sendJsonPacket();
-            },
-            child: Text('Send Stop Commad'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              command = 1;
-              _sendJsonPacket();
-            },
-            child: Text('Send Forward Command'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              command = 2;
-              _sendJsonPacket();
-            },
-            child: Text('Send Backward Command'),
+          Text(_isConnected ? 'Device Connected' : 'Device Disconnected'),
+          Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                  onPressed: () {
+                    command = 0;
+                    _sendJsonPacket();
+                  },
+                  child: Text('Stop'),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ElevatedButton(
+                  style:
+                      ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                  onPressed: () {
+                    command = 1;
+                    _sendJsonPacket();
+                  },
+                  child: Text('Forward'),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ElevatedButton(
+                  style:
+                      ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+                  onPressed: () {
+                    command = 2;
+                    _sendJsonPacket();
+                  },
+                  child: Text('Backward'),
+                ),
+              ),
+            ],
           ),
 
-          ElevatedButton(
-            onPressed: _sendJsonPacket,
-            child: Text('Send JSON Packet'),
+          Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                  onPressed: () {
+                    relay = true;
+                    _sendJsonPacket();
+                  },
+                  child: Text('E-STOP'),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ElevatedButton(
+                  style:
+                      ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                  onPressed: () {
+                    relay = false;
+                    _sendJsonPacket();
+                  },
+                  child: Text('RESET E-STOP'),
+                ),
+              ),
+            ],
           ),
-          SizedBox(height: 20),
-
-          ElevatedButton(
-            onPressed: () {
-              relay = true;
-              _sendJsonPacket();
-            },
-            child: Text('E-STOP'),
-          ),
-          SizedBox(height: 20),
-
-          ElevatedButton(
-            onPressed: () {
-              relay = false;
-              _sendJsonPacket();
-            },
-            child: Text('RESET E-STOP'),
-          ),
-          SizedBox(height: 20),
 
           // Display Sent JSON Packet Fields
-          Text('Sent JSON Packet:'),
-          Text('Stepper Command: $command'),
-          Text('Stepper Speed: ${_textFieldController.text}'),
-          Text('========================================='),
+          Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Sent JSON Packet:'),
+                    Text('Stepper Command: $command'),
+                    Text('Stepper Speed: ${_textFieldController.text}'),
+                    Text('Ultrasonic Value: $ultrasonic'),
+                    Text('Relay Flag: $relay'),
+                  ],
+                ),
+              ),
 
-          // Display Received JSON Packet Fields
-          if (_receivedData.isNotEmpty) Text('Received JSON Packet Fields:'),
-          Text('Stepper Command: ${_receivedData['stepper_command']}'),
-          Text('Stepper Speed: ${_receivedData['stepper_speed']}'),
-          Text('Ultrasonic Value: ${_receivedData['ultrasonic_value']}'),
-          Text('Relay Flag: ${_receivedData['relay_flag']}'),
+              // Display Received JSON Packet Fields
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Received JSON Packet Fields:'),
+                    Text(
+                        'Stepper Command: ${_receivedData['stepper_command']}'),
+                    Text('Stepper Speed: ${_receivedData['stepper_speed']}'),
+                    Text(
+                        'Ultrasonic Value: ${_receivedData['ultrasonic_value']}'),
+                    Text('Relay Flag: ${_receivedData['relay_flag']}'),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: _textFieldController,
+              decoration: InputDecoration(labelText: 'Set Speed'),
+            ),
+          ),
         ],
       ),
     );
