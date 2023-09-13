@@ -37,7 +37,7 @@ class _MyHomeState extends State<MyHome> {
             flex: 1,
             child: _videoStream,
           ),
-          Expanded(flex: 2, child: MyCommunication()),
+          Expanded(flex: 1, child: MyCommunication()),
         ]),
       ), // Use the videoStream from the widget parameter
     );

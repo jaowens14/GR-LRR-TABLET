@@ -33,8 +33,8 @@ class _VideoStreamState extends State<VideoStream> {
   }
 
   // Define the desired width and height for the resized image.
-  static const double desiredWidth = 560.0;
-  static const double desiredHeight = 420.0;
+  static const double desiredWidth = 400.0;
+  static const double desiredHeight = 300.0;
 
   // Function to resize the image.
   Widget _resizeImage(Uint8List imageData) {
@@ -46,68 +46,81 @@ class _VideoStreamState extends State<VideoStream> {
 
     // Resize the image using the `FittedBox` widget.
     return FittedBox(
+      fit: BoxFit.cover, // You can choose the desired fit mode.
       child: SizedBox(
         width: desiredWidth,
         height: desiredHeight,
         child: image,
       ),
-      fit: BoxFit.cover, // You can choose the desired fit mode.
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Center(
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  ElevatedButton(
-                    onPressed: () => connect(context),
-                    style: Styles.buttonStyle,
-                    child: const Text("Connect"),
-                  ),
-                  ElevatedButton(
-                    onPressed: disconnect,
-                    style: Styles.buttonStyle,
-                    child: const Text("Disconnect"),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 50.0,
-              ),
-              _isConnected
-                  ? StreamBuilder(
-                      stream: _socket.stream,
-                      builder: (context, snapshot) {
-                        if (!snapshot.hasData) {
-                          return const CircularProgressIndicator();
-                        }
+    return Center(
+      child: Column(
+        children: [
+          Expanded(
+            flex: 10,
+            child: FittedBox(
+              fit: BoxFit.contain,
+              child: SizedBox(
+                width: desiredWidth,
+                height: desiredHeight,
+                child: _isConnected
+                    ? StreamBuilder(
+                        stream: _socket.stream,
+                        builder: (context, snapshot) {
+                          if (!snapshot.hasData) {
+                            return Center(
+                              child: SizedBox(
+                                height: 40.0,
+                                width: 40.0,
+                                child: CircularProgressIndicator(),
+                              ),
+                            );
+                          }
 
-                        if (snapshot.connectionState == ConnectionState.done) {
-                          return const Center(
-                            child: Text("Connection Closed !"),
-                          );
-                        }
-                        //? Working for single frames
-                        return _resizeImage(
-                          Uint8List.fromList(
-                            base64Decode(
-                              (snapshot.data.toString()),
+                          if (snapshot.connectionState ==
+                              ConnectionState.done) {
+                            return const Center(
+                              child: Text("Connection Closed !"),
+                            );
+                          }
+                          //? Working for single frames
+                          return _resizeImage(
+                            Uint8List.fromList(
+                              base64Decode(
+                                (snapshot.data.toString()),
+                              ),
                             ),
-                          ),
-                        );
-                      },
-                    )
-                  : const Text("Initiate Connection")
-            ],
+                          );
+                        },
+                      )
+                    : const Image(
+                        image: AssetImage("assets/images/flutter_logo.png")),
+              ),
+            ),
           ),
-        ),
+          Expanded(
+            flex: 1,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ElevatedButton(
+                  onPressed: () => connect(context),
+                  style: Styles.buttonStyle,
+                  child: const Text("Connect"),
+                ),
+                ElevatedButton(
+                  onPressed: disconnect,
+                  style: Styles.buttonStyle,
+                  child: const Text("Disconnect"),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

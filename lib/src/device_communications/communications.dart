@@ -1,3 +1,4 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/io.dart';
@@ -16,10 +17,13 @@ class _WebSocketPageState extends State<MyCommunication> {
   TextEditingController _textFieldController = TextEditingController();
   Map<String, dynamic> _receivedData = {}; // Store parsed JSON data
   int command = 0;
+  bool mode = false;
   int ultrasonic = 0;
   bool relay = false;
 
   late Timer _pingTimer; // Timer for sending pings
+
+  List<FlSpot> dataPoints = [];
 
   @override
   void initState() {
@@ -40,6 +44,15 @@ class _WebSocketPageState extends State<MyCommunication> {
           final parsedData = jsonDecode(data);
           setState(() {
             _receivedData = parsedData;
+
+            final newDataPoint = FlSpot(
+                dataPoints.length.toDouble(), // X-axis value (time)
+                _receivedData['ultrasonic_value'].toDouble());
+
+            dataPoints.add(newDataPoint);
+            if (dataPoints.length == 50) {
+              dataPoints = [];
+            }
           });
         },
         onDone: () {
@@ -76,6 +89,7 @@ class _WebSocketPageState extends State<MyCommunication> {
     final Map<String, dynamic> packet = {
       'stepper_command': command,
       'stepper_speed': speed,
+      'stepper_mode': mode,
       'ultrasonic_value': ultrasonic,
       'relay_flag': relay,
     };
@@ -140,6 +154,19 @@ class _WebSocketPageState extends State<MyCommunication> {
                   child: Text('Backward'),
                 ),
               ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Color.fromARGB(255, 219, 197, 0)),
+                  onPressed: () {
+                    mode = !mode;
+                    print(mode);
+                    _sendJsonPacket();
+                  },
+                  child: Text('Mode'),
+                ),
+              ),
             ],
           ),
 
@@ -168,6 +195,18 @@ class _WebSocketPageState extends State<MyCommunication> {
                   child: Text('RESET E-STOP'),
                 ),
               ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ElevatedButton(
+                  style:
+                      ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+                  onPressed: () {
+                    relay = false;
+                    _connectWebSocket();
+                  },
+                  child: Text('RECONNECT DEVICE'),
+                ),
+              ),
             ],
           ),
 
@@ -182,6 +221,7 @@ class _WebSocketPageState extends State<MyCommunication> {
                     Text('Sent JSON Packet:'),
                     Text('Stepper Command: $command'),
                     Text('Stepper Speed: ${_textFieldController.text}'),
+                    Text('Stepper Mode: $mode'),
                     Text('Ultrasonic Value: $ultrasonic'),
                     Text('Relay Flag: $relay'),
                   ],
@@ -198,6 +238,7 @@ class _WebSocketPageState extends State<MyCommunication> {
                     Text(
                         'Stepper Command: ${_receivedData['stepper_command']}'),
                     Text('Stepper Speed: ${_receivedData['stepper_speed']}'),
+                    Text('Stepper Mode: $mode'),
                     Text(
                         'Ultrasonic Value: ${_receivedData['ultrasonic_value']}'),
                     Text('Relay Flag: ${_receivedData['relay_flag']}'),
@@ -211,6 +252,36 @@ class _WebSocketPageState extends State<MyCommunication> {
             child: TextField(
               controller: _textFieldController,
               decoration: InputDecoration(labelText: 'Set Speed'),
+            ),
+          ),
+          Container(
+            height: 200, // Adjust the height as needed
+            padding: EdgeInsets.all(8.0),
+            child: LineChart(
+              LineChartData(
+                gridData: FlGridData(show: false),
+                titlesData: FlTitlesData(show: false),
+                borderData: FlBorderData(
+                  show: true,
+                  border: Border.all(
+                    color: const Color(0xff37434d),
+                    width: 1,
+                  ),
+                ),
+                minX: 0,
+                maxX: dataPoints.length.toDouble(),
+                minY: 0,
+                maxY: 30000, // Adjust the Y-axis range as needed
+                lineBarsData: [
+                  LineChartBarData(
+                    spots: dataPoints,
+                    isCurved: true,
+                    colors: [Colors.blue],
+                    dotData: FlDotData(show: false),
+                    belowBarData: BarAreaData(show: false),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
