@@ -7,7 +7,7 @@ import 'package:web_socket_channel/status.dart' as status;
 class WebSocket {
   // ------------------------- Members ------------------------- //
   late String url;
-  WebSocketChannel? _channel;
+  WebSocketChannel? video_channel;
   StreamController<bool> streamController = StreamController<bool>.broadcast();
 
   // ---------------------- Getter Setters --------------------- //
@@ -20,8 +20,8 @@ class WebSocket {
   }
 
   Stream<dynamic> get stream {
-    if (_channel != null) {
-      return _channel!.stream;
+    if (video_channel != null) {
+      return video_channel!.stream;
     } else {
       throw WebSocketChannelException("The connection was not established !");
     }
@@ -34,14 +34,14 @@ class WebSocket {
 
   /// Connects the current application to a websocket
   void connect() async {
-    _channel = WebSocketChannel.connect(
+    video_channel = WebSocketChannel.connect(
         Uri.parse(ServerWebsocketAddress.videoWebsocketURL));
   }
 
   /// Disconnects the current application from a websocket
   void disconnect() {
-    if (_channel != null) {
-      _channel!.sink.close(status.goingAway);
+    if (video_channel != null) {
+      video_channel!.sink.close(status.goingAway);
     }
   }
 }

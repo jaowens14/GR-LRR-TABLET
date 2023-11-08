@@ -12,8 +12,8 @@ class MyCommunication extends StatefulWidget {
 }
 
 class _WebSocketPageState extends State<MyCommunication> {
-  late WebSocketChannel _channel;
-  bool _isConnected = false;
+  late WebSocketChannel commands_channel;
+  bool device_isConnected = false;
   TextEditingController _textFieldController = TextEditingController();
   Map<String, dynamic> _receivedData = {}; // Store parsed JSON data
   int command = 0;
@@ -33,12 +33,14 @@ class _WebSocketPageState extends State<MyCommunication> {
 
   Future<void> _connectWebSocket() async {
     try {
-      final channel = IOWebSocketChannel.connect(
-          Uri.parse(DeviceWebsocketAddress.commandsURL),
-          pingInterval: Duration(milliseconds: 500));
-      _channel = channel;
-
-      _channel.stream.listen(
+      final device_channel = IOWebSocketChannel.connect(
+        Uri.parse(DeviceWebsocketAddress.commandsURL),
+        pingInterval: Duration(milliseconds: 100),
+        connectTimeout: null,
+      );
+      commands_channel = device_channel;
+      device_isConnected = true;
+      commands_channel.stream.listen(
         (data) {
           print('Received: $data');
           final parsedData = jsonDecode(data);
@@ -60,25 +62,22 @@ class _WebSocketPageState extends State<MyCommunication> {
         },
         onError: (error) {
           setState(() {
-            _isConnected = false;
+            device_isConnected = false;
           });
           print('WebSocket error: $error');
           _reconnectWebSocket();
         },
       );
-
-      setState(() {
-        _isConnected = true;
-      });
     } catch (error) {
+      device_isConnected = false;
       print('WebSocket connection failed: $error');
       _reconnectWebSocket();
     }
   }
 
   void _reconnectWebSocket() {
-    if (_isConnected) {
-      _channel.sink.close();
+    if (device_isConnected) {
+      commands_channel.sink.close();
       _connectWebSocket();
     }
   }
@@ -95,8 +94,8 @@ class _WebSocketPageState extends State<MyCommunication> {
     };
 
     final String jsonPacket = jsonEncode(packet);
-    if (_isConnected) {
-      _channel.sink.add(jsonPacket);
+    if (device_isConnected) {
+      commands_channel.sink.add(jsonPacket);
     } else {
       print('Not connected to WebSocket');
     }
@@ -105,7 +104,7 @@ class _WebSocketPageState extends State<MyCommunication> {
   @override
   void dispose() {
     _pingTimer.cancel(); // Cancel the ping timer
-    _channel.sink.close();
+    commands_channel.sink.close();
     _textFieldController.dispose();
     super.dispose();
   }
@@ -116,7 +115,7 @@ class _WebSocketPageState extends State<MyCommunication> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(_isConnected ? 'Device Connected' : 'Device Disconnected'),
+          Text(device_isConnected ? 'Device Connected' : 'Device Disconnected'),
           Row(
             children: [
               Padding(

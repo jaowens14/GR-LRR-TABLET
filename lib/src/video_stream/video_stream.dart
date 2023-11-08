@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 
-import 'package:gr_lrr/src/video_stream/websocket.dart';
+import 'package:gr_lrr/src/video_stream/video_websocket.dart';
 import 'package:gr_lrr/src/video_stream/server_ws_ip.dart';
 import 'package:gr_lrr/src/video_stream/styles.dart';
 
@@ -14,21 +14,22 @@ class VideoStream extends StatefulWidget {
 }
 
 class _VideoStreamState extends State<VideoStream> {
-  final WebSocket _socket = WebSocket(ServerWebsocketAddress.videoWebsocketURL);
-  bool _isConnected = false;
+  final WebSocket video_socket =
+      WebSocket(ServerWebsocketAddress.videoWebsocketURL);
+  bool video_isConnected = false;
 
   void connect(BuildContext context) async {
-    _socket.connect();
+    video_socket.connect();
     setState(() {
-      _isConnected = true;
+      video_isConnected = true;
     });
   }
 
   void disconnect() {
     print('disconnected');
-    _socket.disconnect();
+    video_socket.disconnect();
     setState(() {
-      _isConnected = false;
+      video_isConnected = false;
     });
   }
 
@@ -67,9 +68,9 @@ class _VideoStreamState extends State<VideoStream> {
               child: SizedBox(
                 width: desiredWidth,
                 height: desiredHeight,
-                child: _isConnected
+                child: video_isConnected
                     ? StreamBuilder(
-                        stream: _socket.stream,
+                        stream: video_socket.stream,
                         builder: (context, snapshot) {
                           if (!snapshot.hasData) {
                             return Center(
