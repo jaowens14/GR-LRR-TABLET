@@ -14,7 +14,12 @@ class MyCommunication extends StatefulWidget {
 class _WebSocketPageState extends State<MyCommunication> {
   late WebSocketChannel commandsChannel;
   bool device_isConnected = false;
-  TextEditingController _textFieldController = TextEditingController();
+  TextEditingController _speedFieldController = TextEditingController();
+  TextEditingController _setpointFieldController = TextEditingController();
+  TextEditingController _kpFieldController = TextEditingController();
+  TextEditingController _kiFieldController = TextEditingController();
+  TextEditingController _kdFieldController = TextEditingController();
+
   Map<String, dynamic> _receivedData = {}; // Store parsed JSON data
   int command = 0;
   bool mode = false;
@@ -79,11 +84,19 @@ class _WebSocketPageState extends State<MyCommunication> {
   }
 
   void _sendJsonPacket() {
-    final String speed = _textFieldController.text;
+    final String speed = _speedFieldController.text;
+    final String setpoint = _setpointFieldController.text;
+    final String kp = _kpFieldController.text;
+    final String ki = _kiFieldController.text;
+    final String kd = _kdFieldController.text;
 
     final Map<String, dynamic> packet = {
       'stepper_command': command,
       'stepper_speed': speed,
+      'PID_setpoint': setpoint,
+      'PID_Kp': kp,
+      'PID_Ki': ki,
+      'PID_Kd': kd,
       'stepper_mode': mode,
       'ultrasonic_value': ultrasonic,
       'relay_flag': relay,
@@ -101,7 +114,13 @@ class _WebSocketPageState extends State<MyCommunication> {
   @override
   void dispose() {
     commandsChannel.sink.close();
-    _textFieldController.dispose();
+    _speedFieldController.dispose();
+    _setpointFieldController.dispose();
+    _kpFieldController.dispose();
+    _kiFieldController.dispose();
+    _kdFieldController.dispose();
+
+    // here
     super.dispose();
   }
 
@@ -202,6 +221,16 @@ class _WebSocketPageState extends State<MyCommunication> {
                   child: Text('RECONNECT DEVICE'),
                 ),
               ),
+              Expanded(
+                flex: 2,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextField(
+                    controller: _speedFieldController,
+                    decoration: InputDecoration(labelText: 'Set Speed'),
+                  ),
+                ),
+              ),
             ],
           ),
 
@@ -215,7 +244,11 @@ class _WebSocketPageState extends State<MyCommunication> {
                   children: [
                     Text('Sent JSON Packet:'),
                     Text('Stepper Command: $command'),
-                    Text('Stepper Speed: ${_textFieldController.text}'),
+                    Text('Stepper Speed: ${_speedFieldController.text}'),
+                    Text('Set Point: ${_setpointFieldController.text}'),
+                    Text('Kp: ${_kpFieldController.text}'),
+                    Text('Ki: ${_kiFieldController.text}'),
+                    Text('Kd: ${_kdFieldController.text}'),
                     Text('Stepper Mode: $mode'),
                     Text('Ultrasonic Value: $ultrasonic'),
                     Text('Relay Flag: $relay'),
@@ -233,6 +266,10 @@ class _WebSocketPageState extends State<MyCommunication> {
                     Text(
                         'Stepper Command: ${_receivedData['stepper_command']}'),
                     Text('Stepper Speed: ${_receivedData['stepper_speed']}'),
+                    Text('Set Point: ${_receivedData['PID_setpoint']}'),
+                    Text('Kp: ${_receivedData['PID_Kp']}'),
+                    Text('Ki: ${_receivedData['PID_Ki']}'),
+                    Text('Kd: ${_receivedData['PID_Kd']}'),
                     Text('Stepper Mode: $mode'),
                     Text(
                         'Ultrasonic Value: ${_receivedData['ultrasonic_value']}'),
@@ -240,15 +277,50 @@ class _WebSocketPageState extends State<MyCommunication> {
                   ],
                 ),
               ),
+
+              Expanded(
+                flex: 2,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextField(
+                    controller: _setpointFieldController,
+                    decoration: InputDecoration(labelText: 'Set Setpoint'),
+                  ),
+                ),
+              ),
+              Expanded(
+                flex: 1,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextField(
+                    controller: _kpFieldController,
+                    decoration: InputDecoration(labelText: 'Kp'),
+                  ),
+                ),
+              ),
+              Expanded(
+                flex: 1,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextField(
+                    controller: _kiFieldController,
+                    decoration: InputDecoration(labelText: 'Ki'),
+                  ),
+                ),
+              ),
+              Expanded(
+                flex: 1,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextField(
+                    controller: _kdFieldController,
+                    decoration: InputDecoration(labelText: 'Kd'),
+                  ),
+                ),
+              ),
             ],
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: _textFieldController,
-              decoration: InputDecoration(labelText: 'Set Speed'),
-            ),
-          ),
+
           Container(
             height: 200, // Adjust the height as needed
             padding: EdgeInsets.all(8.0),
