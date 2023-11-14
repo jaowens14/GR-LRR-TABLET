@@ -249,7 +249,7 @@ class _WebSocketPageState extends State<MyCommunication> {
                     Text('Kp: ${_kpFieldController.text}'),
                     Text('Ki: ${_kiFieldController.text}'),
                     Text('Kd: ${_kdFieldController.text}'),
-                    Text('Stepper Mode: $mode'),
+                    Text('Stepper Mode: ${mode ? 'PID' : 'Set'}'),
                     Text('Ultrasonic Value: $ultrasonic'),
                     Text('Relay Flag: $relay'),
                   ],
@@ -270,7 +270,7 @@ class _WebSocketPageState extends State<MyCommunication> {
                     Text('Kp: ${_receivedData['PID_Kp']}'),
                     Text('Ki: ${_receivedData['PID_Ki']}'),
                     Text('Kd: ${_receivedData['PID_Kd']}'),
-                    Text('Stepper Mode: $mode'),
+                    Text('Stepper Mode: ${mode ? 'PID' : 'Set'}'),
                     Text(
                         'Ultrasonic Value: ${_receivedData['ultrasonic_value']}'),
                     Text('Relay Flag: ${_receivedData['relay_flag']}'),
