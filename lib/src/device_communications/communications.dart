@@ -28,6 +28,7 @@ class _WebSocketPageState extends State<MyCommunication> {
   int ultrasonic = 0;
   bool relay = false;
   bool estop = false;
+  double uptime = 0;
 
   List<FlSpot> dataPoints = [];
 
@@ -43,7 +44,7 @@ class _WebSocketPageState extends State<MyCommunication> {
     try {
       commandsChannel = IOWebSocketChannel.connect(
         Uri.parse(DeviceWebsocketAddress.commandsURL),
-        pingInterval: Duration(milliseconds: 1000),
+        pingInterval: Duration(milliseconds: 2000),
         connectTimeout: null,
       );
       commandsChannel.stream.listen(
@@ -106,6 +107,7 @@ class _WebSocketPageState extends State<MyCommunication> {
       'ultrasonic_value': ultrasonic,
       'estop': estop,
       'relay_flag': relay,
+      'uptime': uptime,
     };
 
     final String jsonPacket = jsonEncode(packet);
@@ -299,7 +301,7 @@ class _WebSocketPageState extends State<MyCommunication> {
                     Text('Kd: ${_kdFieldController.text}'),
                     Text('Stepper Mode: ${mode ? 'PID' : 'Set'}'),
                     Text('Ultrasonic Value: $ultrasonic'),
-                    Text('Relay Flag: $relay'),
+                    Text('E-Stop: ${estop ? 'Active' : 'Inactive'}'),
                   ],
                 ),
               ),
@@ -321,7 +323,8 @@ class _WebSocketPageState extends State<MyCommunication> {
                     Text('Stepper Mode: ${mode ? 'PID' : 'Set'}'),
                     Text(
                         'Ultrasonic Value: ${_receivedData['ultrasonic_value']}'),
-                    Text('Relay Flag: ${_receivedData['relay_flag']}'),
+                    Text('E-Stop: ${estop ? 'Active' : 'Inactive'}'),
+                    Text('Uptime (min): ${_receivedData['uptime']}'),
                   ],
                 ),
               ),
@@ -370,7 +373,7 @@ class _WebSocketPageState extends State<MyCommunication> {
           ),
 
           Container(
-            height: 200, // Adjust the height as needed
+            height: 150, // Adjust the height as needed
             padding: EdgeInsets.all(8.0),
             child: LineChart(
               LineChartData(
