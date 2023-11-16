@@ -5,6 +5,8 @@ import 'package:web_socket_channel/io.dart';
 import 'dart:convert';
 import 'dart:async'; // Import the async library for Timer
 import 'package:gr_lrr/src/device_communications/device_ws_ip.dart';
+import 'package:flutter/services.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class MyCommunication extends StatefulWidget {
   @override
@@ -25,8 +27,11 @@ class _WebSocketPageState extends State<MyCommunication> {
   bool mode = false;
   int ultrasonic = 0;
   bool relay = false;
+  bool estop = false;
 
   List<FlSpot> dataPoints = [];
+
+  final player = AudioPlayer();
 
   @override
   void initState() {
@@ -99,6 +104,7 @@ class _WebSocketPageState extends State<MyCommunication> {
       'PID_Kd': kd,
       'stepper_mode': mode,
       'ultrasonic_value': ultrasonic,
+      'estop': estop,
       'relay_flag': relay,
     };
 
@@ -133,52 +139,75 @@ class _WebSocketPageState extends State<MyCommunication> {
           Text(device_isConnected ? 'Device Connected' : 'Device Disconnected'),
           Row(
             children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                  onPressed: () {
-                    command = 0;
-                    _sendJsonPacket();
-                  },
-                  child: Text('Stop'),
+              Expanded(
+                flex: 2,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        minimumSize: Size.fromHeight(75)),
+                    onPressed: () {
+                      HapticFeedback.vibrate();
+                      SystemSound.play(SystemSoundType.click);
+                      SystemSound.play(SystemSoundType.alert);
+                      command = 0;
+                      _sendJsonPacket();
+                    },
+                    child: Text('Stop'),
+                  ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ElevatedButton(
-                  style:
-                      ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                  onPressed: () {
-                    command = 1;
-                    _sendJsonPacket();
-                  },
-                  child: Text('Forward'),
+              Expanded(
+                flex: 1,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        minimumSize: Size.fromHeight(75)),
+                    onPressed: () {
+                      HapticFeedback.vibrate();
+                      command = 1;
+                      _sendJsonPacket();
+                    },
+                    child: Text('Forward'),
+                  ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ElevatedButton(
-                  style:
-                      ElevatedButton.styleFrom(backgroundColor: Colors.orange),
-                  onPressed: () {
-                    command = 2;
-                    _sendJsonPacket();
-                  },
-                  child: Text('Backward'),
+              Expanded(
+                flex: 1,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.orange,
+                        minimumSize: Size.fromHeight(75)),
+                    onPressed: () {
+                      HapticFeedback.vibrate();
+                      command = 2;
+                      _sendJsonPacket();
+                    },
+                    child: Text('Backward'),
+                  ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Color.fromARGB(255, 219, 197, 0)),
-                  onPressed: () {
-                    mode = !mode;
-                    print(mode);
-                    _sendJsonPacket();
-                  },
-                  child: Text('Mode'),
+              Expanded(
+                flex: 1,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Color.fromARGB(255, 219, 197, 0),
+                        minimumSize: Size.fromHeight(75)),
+                    onPressed: () {
+                      HapticFeedback.vibrate();
+                      mode = !mode;
+                      print(mode);
+                      _sendJsonPacket();
+                    },
+                    child: Text('Mode'),
+                  ),
                 ),
               ),
             ],
@@ -186,39 +215,58 @@ class _WebSocketPageState extends State<MyCommunication> {
 
           Row(
             children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                  onPressed: () {
-                    relay = true;
-                    _sendJsonPacket();
-                  },
-                  child: Text('E-STOP'),
+              Expanded(
+                flex: 1,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        minimumSize: Size.fromHeight(75)),
+                    onPressed: () {
+                      HapticFeedback.vibrate();
+                      relay = true;
+                      command = 0;
+                      estop = true;
+                      _sendJsonPacket();
+                    },
+                    child: Text('E-STOP'),
+                  ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ElevatedButton(
-                  style:
-                      ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                  onPressed: () {
-                    relay = false;
-                    _sendJsonPacket();
-                  },
-                  child: Text('RESET E-STOP'),
+              Expanded(
+                flex: 1,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        minimumSize: Size.fromHeight(75)),
+                    onPressed: () {
+                      HapticFeedback.vibrate();
+                      relay = false;
+                      estop = false;
+                      _sendJsonPacket();
+                    },
+                    child: Text('RESET E-STOP'),
+                  ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ElevatedButton(
-                  style:
-                      ElevatedButton.styleFrom(backgroundColor: Colors.orange),
-                  onPressed: () {
-                    relay = false;
-                    _reconnectWebSocket();
-                  },
-                  child: Text('RECONNECT DEVICE'),
+              Expanded(
+                flex: 1,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.orange,
+                        minimumSize: Size.fromHeight(75)),
+                    onPressed: () {
+                      HapticFeedback.vibrate();
+                      relay = false;
+                      _reconnectWebSocket();
+                    },
+                    child: Text('RECONNECT DEVICE'),
+                  ),
                 ),
               ),
               Expanded(
