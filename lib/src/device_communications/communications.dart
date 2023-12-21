@@ -54,6 +54,7 @@ class _WebSocketPageState extends State<MyCommunication> {
           setState(() {
             _receivedData = parsedData;
             device_isConnected = true;
+            command = _receivedData['stepper_command'];
 
             final newDataPoint = FlSpot(
                 dataPoints.length.toDouble(), // X-axis value (time)
