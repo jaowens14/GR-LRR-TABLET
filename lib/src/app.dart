@@ -74,8 +74,8 @@ class MyApp extends StatelessWidget {
                   case MyHome.routeName:
                     return MyHome(videoStream: videoStream);
 
-                  case DeviceSettings.routeName:
-                    return const DeviceSettings();
+                  case MyAPI.routeName:
+                    return const MyAPI();
 
                   case SettingsView.routeName:
                     return SettingsView(controller: settingsController);

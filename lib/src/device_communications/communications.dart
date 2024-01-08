@@ -8,6 +8,8 @@ import 'package:gr_lrr/src/device_communications/device_ws_ip.dart';
 import 'package:flutter/services.dart';
 import 'package:audioplayers/audioplayers.dart';
 
+import 'package:list_utilities/list_utilities.dart';
+
 class MyCommunication extends StatefulWidget {
   @override
   _WebSocketPageState createState() => _WebSocketPageState();
@@ -30,7 +32,8 @@ class _WebSocketPageState extends State<MyCommunication> {
   bool estop = false;
   double uptime = 0;
 
-  List<FlSpot> dataPoints = [];
+  List<ScatterSpot> dataPoints = [];
+  int count = 0;
 
   final player = AudioPlayer();
 
@@ -56,13 +59,17 @@ class _WebSocketPageState extends State<MyCommunication> {
             device_isConnected = true;
             command = _receivedData['stepper_command'];
 
-            final newDataPoint = FlSpot(
-                dataPoints.length.toDouble(), // X-axis value (time)
-                _receivedData['ultrasonic_value'].toDouble());
+            final newDataPoint = ScatterSpot(
+                count.toDouble(), _receivedData['ultrasonic_value'].toDouble(),
+                radius: 4, color: Colors.green);
 
             dataPoints.add(newDataPoint);
             if (dataPoints.length == 50) {
-              dataPoints = [];
+              dataPoints.removeFirst();
+            }
+            count++;
+            if (count == 50) {
+              count = 0;
             }
           });
         },
@@ -139,7 +146,77 @@ class _WebSocketPageState extends State<MyCommunication> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          Container(
+            height: 150, // Adjust the height as needed
+            padding: EdgeInsets.all(8.0),
+            child: ScatterChart(
+              ScatterChartData(
+                gridData: FlGridData(show: true),
+                titlesData: FlTitlesData(show: true),
+                borderData: FlBorderData(
+                  show: true,
+                  border: Border.all(
+                    color: const Color(0xff37434d),
+                    width: 1,
+                  ),
+                ),
+                minX: 0,
+                maxX: 50,
+                minY: 0,
+                maxY: 30000, // Adjust the Y-axis range as needed
+                scatterSpots: dataPoints,
+              ),
+            ),
+          ),
           Text(device_isConnected ? 'Device Connected' : 'Device Disconnected'),
+          Visibility(
+            visible: false,
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Sent JSON Packet:'),
+                      Text('Stepper Command: $command'),
+                      Text('Stepper Speed: ${_speedFieldController.text}'),
+                      Text('Set Point: ${_setpointFieldController.text}'),
+                      Text('Kp: ${_kpFieldController.text}'),
+                      Text('Ki: ${_kiFieldController.text}'),
+                      Text('Kd: ${_kdFieldController.text}'),
+                      Text('Stepper Mode: ${mode ? 'PID' : 'Set'}'),
+                      Text('Ultrasonic Value: $ultrasonic'),
+                      Text('E-Stop: ${estop ? 'Active' : 'Inactive'}'),
+                    ],
+                  ),
+                ),
+
+                // Display Received JSON Packet Fields
+                Expanded(
+                  flex: 1,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Received JSON Packet Fields:'),
+                      Text(
+                          'Stepper Command: ${_receivedData['stepper_command']}'),
+                      Text('Stepper Speed: ${_receivedData['stepper_speed']}'),
+                      Text('Set Point: ${_receivedData['PID_setpoint']}'),
+                      Text('Kp: ${_receivedData['PID_Kp']}'),
+                      Text('Ki: ${_receivedData['PID_Ki']}'),
+                      Text('Kd: ${_receivedData['PID_Kd']}'),
+                      Text('Stepper Mode: ${mode ? 'PID' : 'Set'}'),
+                      Text(
+                          'Ultrasonic Value: ${_receivedData['ultrasonic_value']}'),
+                      Text('E-Stop: ${estop ? 'Active' : 'Inactive'}'),
+                      Text('Uptime (min): ${_receivedData['uptime']}'),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
           Row(
             children: [
               Expanded(
@@ -288,48 +365,6 @@ class _WebSocketPageState extends State<MyCommunication> {
           // Display Sent JSON Packet Fields
           Row(
             children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Sent JSON Packet:'),
-                    Text('Stepper Command: $command'),
-                    Text('Stepper Speed: ${_speedFieldController.text}'),
-                    Text('Set Point: ${_setpointFieldController.text}'),
-                    Text('Kp: ${_kpFieldController.text}'),
-                    Text('Ki: ${_kiFieldController.text}'),
-                    Text('Kd: ${_kdFieldController.text}'),
-                    Text('Stepper Mode: ${mode ? 'PID' : 'Set'}'),
-                    Text('Ultrasonic Value: $ultrasonic'),
-                    Text('E-Stop: ${estop ? 'Active' : 'Inactive'}'),
-                  ],
-                ),
-              ),
-
-              // Display Received JSON Packet Fields
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Received JSON Packet Fields:'),
-                    Text(
-                        'Stepper Command: ${_receivedData['stepper_command']}'),
-                    Text('Stepper Speed: ${_receivedData['stepper_speed']}'),
-                    Text('Set Point: ${_receivedData['PID_setpoint']}'),
-                    Text('Kp: ${_receivedData['PID_Kp']}'),
-                    Text('Ki: ${_receivedData['PID_Ki']}'),
-                    Text('Kd: ${_receivedData['PID_Kd']}'),
-                    Text('Stepper Mode: ${mode ? 'PID' : 'Set'}'),
-                    Text(
-                        'Ultrasonic Value: ${_receivedData['ultrasonic_value']}'),
-                    Text('E-Stop: ${estop ? 'Active' : 'Inactive'}'),
-                    Text('Uptime (min): ${_receivedData['uptime']}'),
-                  ],
-                ),
-              ),
-
               Expanded(
                 flex: 2,
                 child: Padding(
@@ -371,37 +406,6 @@ class _WebSocketPageState extends State<MyCommunication> {
                 ),
               ),
             ],
-          ),
-
-          Container(
-            height: 150, // Adjust the height as needed
-            padding: EdgeInsets.all(8.0),
-            child: LineChart(
-              LineChartData(
-                gridData: FlGridData(show: false),
-                titlesData: FlTitlesData(show: false),
-                borderData: FlBorderData(
-                  show: true,
-                  border: Border.all(
-                    color: const Color(0xff37434d),
-                    width: 1,
-                  ),
-                ),
-                minX: 0,
-                maxX: dataPoints.length.toDouble(),
-                minY: 0,
-                maxY: 30000, // Adjust the Y-axis range as needed
-                lineBarsData: [
-                  LineChartBarData(
-                    spots: dataPoints,
-                    isCurved: true,
-                    colors: [Colors.blue],
-                    dotData: FlDotData(show: false),
-                    belowBarData: BarAreaData(show: false),
-                  ),
-                ],
-              ),
-            ),
           ),
         ],
       ),

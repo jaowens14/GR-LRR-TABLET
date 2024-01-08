@@ -39,7 +39,7 @@ class MyDrawer extends StatelessWidget {
             onTap: () {
               Provider.of<AppBarTitleNotifier>(context, listen: false)
                   .setTitle(deviceSettingTitle);
-              Navigator.of(context).pushNamed(DeviceSettings.routeName);
+              Navigator.of(context).pushNamed(MyAPI.routeName);
             },
           ),
           ListTile(

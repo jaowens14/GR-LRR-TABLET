@@ -21,6 +21,8 @@ dependencies:
 
   flutter_localizations:
     sdk: flutter
+  http: ^1.1.0
+  list_utilities: ^1.0.3
 
 
 dev_dependencies:

@@ -182,7 +182,7 @@ packages:
     source: hosted
     version: "0.0.6"
   http:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: http
       sha256: "759d1a329847dd0f39226c688d3e06a6b8679668e350e2891a6474f8b4bb8525"
@@ -221,6 +221,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
+  list_utilities:
+    dependency: "direct main"
+    description:
+      name: list_utilities
+      sha256: "2c9d341c8d59c4256ab092c2b6a4fb0df8e59cd47e0c9914a38433257d946c9b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.3"
   matcher:
     dependency: transitive
     description:
