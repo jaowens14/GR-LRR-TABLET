@@ -35,7 +35,7 @@ class _VideoStreamState extends State<VideoStream> {
 
   // Define the desired width and height for the resized image.
   static const double desiredWidth = 400.0;
-  static const double desiredHeight = 300.0;
+  static const double desiredHeight = 0.75 * desiredWidth;
 
   // Function to resize the image.
   Widget _resizeImage(Uint8List imageData) {
@@ -62,7 +62,7 @@ class _VideoStreamState extends State<VideoStream> {
       child: Column(
         children: [
           Expanded(
-            flex: 10,
+            flex: 2,
             child: Container(
               decoration: BoxDecoration(
                   border: Border.all(color: Colors.black, width: 2.0)),
@@ -102,7 +102,7 @@ class _VideoStreamState extends State<VideoStream> {
                           },
                         )
                       : const Image(
-                          image: AssetImage("assets/images/flutter_logo.png")),
+                          image: AssetImage("assets/images/vestas.png")),
                 ),
               ),
             ),

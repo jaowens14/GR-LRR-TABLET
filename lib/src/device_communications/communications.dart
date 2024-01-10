@@ -28,9 +28,13 @@ class _WebSocketPageState extends State<MyCommunication> {
   int command = 0;
   bool mode = false;
   int ultrasonic = 0;
+  int battery = 0;
   bool relay = false;
+  bool stepperEnable = false;
   bool estop = false;
   double uptime = 0;
+
+  bool debug = false;
 
   List<ScatterSpot> dataPoints = [];
   int count = 0;
@@ -58,7 +62,7 @@ class _WebSocketPageState extends State<MyCommunication> {
             _receivedData = parsedData;
             device_isConnected = true;
             command = _receivedData['stepper_command'];
-
+            estop = _receivedData['estop'];
             final newDataPoint = ScatterSpot(
                 count.toDouble(), _receivedData['ultrasonic_value'].toDouble(),
                 radius: 4, color: Colors.green);
@@ -107,14 +111,15 @@ class _WebSocketPageState extends State<MyCommunication> {
     final Map<String, dynamic> packet = {
       'stepper_command': command,
       'stepper_speed': speed,
+      'stepper_mode': mode,
+      'stepper_enable': stepperEnable,
       'PID_setpoint': setpoint,
       'PID_Kp': kp,
       'PID_Ki': ki,
       'PID_Kd': kd,
-      'stepper_mode': mode,
       'ultrasonic_value': ultrasonic,
+      'battery_value': battery,
       'estop': estop,
-      'relay_flag': relay,
       'uptime': uptime,
     };
 
@@ -146,31 +151,32 @@ class _WebSocketPageState extends State<MyCommunication> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            height: 150, // Adjust the height as needed
-            padding: EdgeInsets.all(8.0),
-            child: ScatterChart(
-              ScatterChartData(
-                gridData: FlGridData(show: true),
-                titlesData: FlTitlesData(show: true),
-                borderData: FlBorderData(
-                  show: true,
-                  border: Border.all(
-                    color: const Color(0xff37434d),
-                    width: 1,
+          Expanded(
+            flex: 1,
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: ScatterChart(
+                ScatterChartData(
+                  gridData: FlGridData(show: true),
+                  titlesData: FlTitlesData(show: true),
+                  borderData: FlBorderData(
+                    show: true,
+                    border: Border.all(
+                      color: const Color(0xff37434d),
+                      width: 1,
+                    ),
                   ),
+                  minX: 0,
+                  maxX: 50,
+                  minY: 0,
+                  maxY: 5000, // Adjust the Y-axis range as needed
+                  scatterSpots: dataPoints,
                 ),
-                minX: 0,
-                maxX: 50,
-                minY: 0,
-                maxY: 30000, // Adjust the Y-axis range as needed
-                scatterSpots: dataPoints,
               ),
             ),
           ),
-          Text(device_isConnected ? 'Device Connected' : 'Device Disconnected'),
           Visibility(
-            visible: false,
+            visible: debug,
             child: Row(
               children: [
                 Expanded(
@@ -209,7 +215,7 @@ class _WebSocketPageState extends State<MyCommunication> {
                       Text('Stepper Mode: ${mode ? 'PID' : 'Set'}'),
                       Text(
                           'Ultrasonic Value: ${_receivedData['ultrasonic_value']}'),
-                      Text('E-Stop: ${estop ? 'Active' : 'Inactive'}'),
+                      Text('E-Stop: ${estop ? 'Inactive' : 'Active'}'),
                       Text('Uptime (min): ${_receivedData['uptime']}'),
                     ],
                   ),
@@ -220,7 +226,7 @@ class _WebSocketPageState extends State<MyCommunication> {
           Row(
             children: [
               Expanded(
-                flex: 2,
+                flex: 1,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: ElevatedButton(
@@ -229,12 +235,10 @@ class _WebSocketPageState extends State<MyCommunication> {
                         minimumSize: Size.fromHeight(75)),
                     onPressed: () {
                       HapticFeedback.vibrate();
-                      SystemSound.play(SystemSoundType.click);
-                      SystemSound.play(SystemSoundType.alert);
                       command = 0;
                       _sendJsonPacket();
                     },
-                    child: Text('Stop'),
+                    child: Text('STOP'),
                   ),
                 ),
               ),
@@ -251,7 +255,7 @@ class _WebSocketPageState extends State<MyCommunication> {
                       command = 1;
                       _sendJsonPacket();
                     },
-                    child: Text('Forward'),
+                    child: Text('GO FORWARD'),
                   ),
                 ),
               ),
@@ -268,26 +272,46 @@ class _WebSocketPageState extends State<MyCommunication> {
                       command = 2;
                       _sendJsonPacket();
                     },
-                    child: Text('Backward'),
+                    child: Text('GO BACKWARD'),
                   ),
                 ),
               ),
               Expanded(
+                  flex: 1,
+                  child: estop ? Text('ESTOP INACTIVE') : Text('ESTOP ACTIVE')),
+              Expanded(
                 flex: 1,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Color.fromARGB(255, 219, 197, 0),
-                        minimumSize: Size.fromHeight(75)),
-                    onPressed: () {
-                      HapticFeedback.vibrate();
-                      mode = !mode;
-                      print(mode);
-                      _sendJsonPacket();
-                    },
-                    child: Text('Mode'),
+                child: SwitchListTile(
+                  title: Text(
+                    'PID',
+                    textScaleFactor: 0.8,
                   ),
+                  value: mode,
+                  onChanged: (bool value) {
+                    setState(() {
+                      mode = value;
+                    });
+                    HapticFeedback.vibrate();
+                    print(mode);
+                    _sendJsonPacket();
+                  },
+                ),
+              ),
+              Expanded(
+                flex: 1,
+                child: SwitchListTile(
+                  dense: true,
+                  title: Text(
+                    'DEBUG',
+                    textScaleFactor: 0.8,
+                  ),
+                  value: debug,
+                  onChanged: (bool value) {
+                    setState(() {
+                      debug = value;
+                    });
+                    HapticFeedback.vibrate();
+                  },
                 ),
               ),
             ],
@@ -305,12 +329,11 @@ class _WebSocketPageState extends State<MyCommunication> {
                         minimumSize: Size.fromHeight(75)),
                     onPressed: () {
                       HapticFeedback.vibrate();
-                      relay = true;
                       command = 0;
-                      estop = true;
+                      stepperEnable = false; // turn motors off
                       _sendJsonPacket();
                     },
-                    child: Text('E-STOP'),
+                    child: Text('DISABLE MOTORS'),
                   ),
                 ),
               ),
@@ -324,11 +347,11 @@ class _WebSocketPageState extends State<MyCommunication> {
                         minimumSize: Size.fromHeight(75)),
                     onPressed: () {
                       HapticFeedback.vibrate();
-                      relay = false;
-                      estop = false;
+                      command = 0;
+                      stepperEnable = true;
                       _sendJsonPacket();
                     },
-                    child: Text('RESET E-STOP'),
+                    child: Text('ENABLE MOTORS'),
                   ),
                 ),
               ),

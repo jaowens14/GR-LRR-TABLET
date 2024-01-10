@@ -41,7 +41,7 @@ class WebSocket {
   /// Disconnects the current application from a websocket
   void disconnect() {
     if (video_channel != null) {
-      video_channel!.sink.close(status.goingAway);
+      video_channel!.sink.close(status.normalClosure);
     }
   }
 }
