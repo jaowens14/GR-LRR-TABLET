@@ -18,21 +18,24 @@ class MyCommunication extends StatefulWidget {
 class _WebSocketPageState extends State<MyCommunication> {
   late WebSocketChannel commandsChannel;
   bool device_isConnected = false;
-  TextEditingController _speedFieldController = TextEditingController();
-  TextEditingController _setpointFieldController = TextEditingController();
-  TextEditingController _kpFieldController = TextEditingController();
-  TextEditingController _kiFieldController = TextEditingController();
-  TextEditingController _kdFieldController = TextEditingController();
+  TextEditingController _speedFieldController =
+      TextEditingController(text: '0');
+  TextEditingController _setpointFieldController =
+      TextEditingController(text: '0');
+  TextEditingController _targetSpeedFieldController =
+      TextEditingController(text: '0');
+  TextEditingController _kpFieldController = TextEditingController(text: '0');
+  TextEditingController _kiFieldController = TextEditingController(text: '0');
+  TextEditingController _kdFieldController = TextEditingController(text: '0');
 
   Map<String, dynamic> _receivedData = {}; // Store parsed JSON data
   int command = 0;
   bool mode = false;
   int ultrasonic = 0;
   int battery = 0;
-  bool relay = false;
-  bool stepperEnable = false;
+  bool stepperEnable = true;
   bool estop = false;
-  double uptime = 0;
+  int uptime = 0;
 
   bool debug = false;
 
@@ -104,6 +107,7 @@ class _WebSocketPageState extends State<MyCommunication> {
   void _sendJsonPacket() {
     final String speed = _speedFieldController.text;
     final String setpoint = _setpointFieldController.text;
+    final String targetSpeed = _targetSpeedFieldController.text;
     final String kp = _kpFieldController.text;
     final String ki = _kiFieldController.text;
     final String kd = _kdFieldController.text;
@@ -113,6 +117,7 @@ class _WebSocketPageState extends State<MyCommunication> {
       'stepper_speed': speed,
       'stepper_mode': mode,
       'stepper_enable': stepperEnable,
+      'stepper_target_speed': targetSpeed,
       'PID_setpoint': setpoint,
       'PID_Kp': kp,
       'PID_Ki': ki,
@@ -137,6 +142,7 @@ class _WebSocketPageState extends State<MyCommunication> {
     commandsChannel.sink.close();
     _speedFieldController.dispose();
     _setpointFieldController.dispose();
+    _targetSpeedFieldController.dispose();
     _kpFieldController.dispose();
     _kiFieldController.dispose();
     _kdFieldController.dispose();
@@ -188,6 +194,7 @@ class _WebSocketPageState extends State<MyCommunication> {
                       Text('Stepper Command: $command'),
                       Text('Stepper Speed: ${_speedFieldController.text}'),
                       Text('Set Point: ${_setpointFieldController.text}'),
+                      Text('Target Speed:${_targetSpeedFieldController.text}'),
                       Text('Kp: ${_kpFieldController.text}'),
                       Text('Ki: ${_kiFieldController.text}'),
                       Text('Kd: ${_kdFieldController.text}'),
@@ -321,38 +328,20 @@ class _WebSocketPageState extends State<MyCommunication> {
             children: [
               Expanded(
                 flex: 1,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                        minimumSize: Size.fromHeight(75)),
-                    onPressed: () {
-                      HapticFeedback.vibrate();
-                      command = 0;
-                      stepperEnable = false; // turn motors off
-                      _sendJsonPacket();
-                    },
-                    child: Text('DISABLE MOTORS'),
+                child: SwitchListTile(
+                  title: Text(
+                    'MOTORS ENABLED: ',
+                    textScaleFactor: 0.8,
                   ),
-                ),
-              ),
-              Expanded(
-                flex: 1,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                        minimumSize: Size.fromHeight(75)),
-                    onPressed: () {
-                      HapticFeedback.vibrate();
-                      command = 0;
-                      stepperEnable = true;
-                      _sendJsonPacket();
-                    },
-                    child: Text('ENABLE MOTORS'),
-                  ),
+                  value: stepperEnable,
+                  onChanged: (bool value) {
+                    setState(() {
+                      stepperEnable = value;
+                    });
+                    HapticFeedback.vibrate();
+                    print(stepperEnable);
+                    _sendJsonPacket();
+                  },
                 ),
               ),
               Expanded(
@@ -365,10 +354,11 @@ class _WebSocketPageState extends State<MyCommunication> {
                         minimumSize: Size.fromHeight(75)),
                     onPressed: () {
                       HapticFeedback.vibrate();
-                      relay = false;
                       _reconnectWebSocket();
                     },
-                    child: Text('RECONNECT DEVICE'),
+                    child: device_isConnected
+                        ? Text('RECONNECT DEVICE')
+                        : Text("CONNECTING..."),
                   ),
                 ),
               ),
@@ -378,7 +368,7 @@ class _WebSocketPageState extends State<MyCommunication> {
                   padding: const EdgeInsets.all(8.0),
                   child: TextField(
                     controller: _speedFieldController,
-                    decoration: InputDecoration(labelText: 'Set Speed'),
+                    decoration: InputDecoration(labelText: 'Speed'),
                   ),
                 ),
               ),
@@ -394,7 +384,18 @@ class _WebSocketPageState extends State<MyCommunication> {
                   padding: const EdgeInsets.all(8.0),
                   child: TextField(
                     controller: _setpointFieldController,
-                    decoration: InputDecoration(labelText: 'Set Setpoint'),
+                    decoration:
+                        InputDecoration(labelText: 'Target Ultrasonic Value'),
+                  ),
+                ),
+              ),
+              Expanded(
+                flex: 2,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextField(
+                    controller: _targetSpeedFieldController,
+                    decoration: InputDecoration(labelText: 'Target Speed'),
                   ),
                 ),
               ),
