@@ -29,11 +29,11 @@ class _WebSocketPageState extends State<MyCommunication> {
   TextEditingController _kdFieldController = TextEditingController(text: '0');
 
   Map<String, dynamic> _receivedData = {}; // Store parsed JSON data
-  int command = 0;
-  bool mode = false;
+  int motorCommand = 0;
+  bool motorMode = false;
   int ultrasonic = 0;
   int battery = 0;
-  bool stepperEnable = true;
+  bool motorEnable = true;
   bool estop = false;
   int uptime = 0;
 
@@ -64,10 +64,10 @@ class _WebSocketPageState extends State<MyCommunication> {
           setState(() {
             _receivedData = parsedData;
             device_isConnected = true;
-            command = _receivedData['stepper_command'];
+            motorCommand = _receivedData['motorDirection'];
             estop = _receivedData['estop'];
             final newDataPoint = ScatterSpot(
-                count.toDouble(), _receivedData['ultrasonic_value'].toDouble(),
+                count.toDouble(), _receivedData['ultrasonicValue'].toDouble(),
                 radius: 4, color: Colors.green);
 
             dataPoints.add(newDataPoint);
@@ -105,25 +105,25 @@ class _WebSocketPageState extends State<MyCommunication> {
   }
 
   void _sendJsonPacket() {
-    final String speed = _speedFieldController.text;
+    final String motorSpeed = _speedFieldController.text;
     final String setpoint = _setpointFieldController.text;
-    final String targetSpeed = _targetSpeedFieldController.text;
+    final String motorTargetSpeed = _targetSpeedFieldController.text;
     final String kp = _kpFieldController.text;
     final String ki = _kiFieldController.text;
     final String kd = _kdFieldController.text;
 
     final Map<String, dynamic> packet = {
-      'stepper_command': command,
-      'stepper_speed': speed,
-      'stepper_mode': mode,
-      'stepper_enable': stepperEnable,
-      'stepper_target_speed': targetSpeed,
+      'motorDirection': motorCommand,
+      'motorSpeed': motorSpeed,
+      'motorMode': motorMode,
+      'motorEnable': motorEnable,
+      'targetMotorSpeed': motorTargetSpeed,
       'PID_setpoint': setpoint,
       'PID_Kp': kp,
       'PID_Ki': ki,
       'PID_Kd': kd,
-      'ultrasonic_value': ultrasonic,
-      'battery_value': battery,
+      'ultrasonicValue': ultrasonic,
+      'batteryLevel': battery,
       'estop': estop,
       'uptime': uptime,
     };
@@ -191,14 +191,14 @@ class _WebSocketPageState extends State<MyCommunication> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('Sent JSON Packet:'),
-                      Text('Stepper Command: $command'),
+                      Text('Stepper Command: $motorCommand'),
                       Text('Stepper Speed: ${_speedFieldController.text}'),
                       Text('Set Point: ${_setpointFieldController.text}'),
                       Text('Target Speed:${_targetSpeedFieldController.text}'),
                       Text('Kp: ${_kpFieldController.text}'),
                       Text('Ki: ${_kiFieldController.text}'),
                       Text('Kd: ${_kdFieldController.text}'),
-                      Text('Stepper Mode: ${mode ? 'PID' : 'Set'}'),
+                      Text('Stepper Mode: ${motorMode ? 'PID' : 'Set'}'),
                       Text('Ultrasonic Value: $ultrasonic'),
                       Text('E-Stop: ${estop ? 'Active' : 'Inactive'}'),
                     ],
@@ -212,16 +212,15 @@ class _WebSocketPageState extends State<MyCommunication> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('Received JSON Packet Fields:'),
-                      Text(
-                          'Stepper Command: ${_receivedData['stepper_command']}'),
-                      Text('Stepper Speed: ${_receivedData['stepper_speed']}'),
+                      Text('Motor Command: ${_receivedData['motorDirection']}'),
+                      Text('Stepper Speed: ${_receivedData['motorSpeed']}'),
                       Text('Set Point: ${_receivedData['PID_setpoint']}'),
                       Text('Kp: ${_receivedData['PID_Kp']}'),
                       Text('Ki: ${_receivedData['PID_Ki']}'),
                       Text('Kd: ${_receivedData['PID_Kd']}'),
-                      Text('Stepper Mode: ${mode ? 'PID' : 'Set'}'),
+                      Text('Motor Mode: ${motorMode ? 'PID' : 'Set'}'),
                       Text(
-                          'Ultrasonic Value: ${_receivedData['ultrasonic_value']}'),
+                          'Ultrasonic Value: ${_receivedData['ultrasonicValue']}'),
                       Text('E-Stop: ${estop ? 'Inactive' : 'Active'}'),
                       Text('Uptime (min): ${_receivedData['uptime']}'),
                     ],
@@ -242,7 +241,7 @@ class _WebSocketPageState extends State<MyCommunication> {
                         minimumSize: Size.fromHeight(75)),
                     onPressed: () {
                       HapticFeedback.vibrate();
-                      command = 0;
+                      motorCommand = 0;
                       _sendJsonPacket();
                     },
                     child: Text('STOP'),
@@ -259,7 +258,7 @@ class _WebSocketPageState extends State<MyCommunication> {
                         minimumSize: Size.fromHeight(75)),
                     onPressed: () {
                       HapticFeedback.vibrate();
-                      command = 1;
+                      motorCommand = 1;
                       _sendJsonPacket();
                     },
                     child: Text('GO FORWARD'),
@@ -276,7 +275,7 @@ class _WebSocketPageState extends State<MyCommunication> {
                         minimumSize: Size.fromHeight(75)),
                     onPressed: () {
                       HapticFeedback.vibrate();
-                      command = 2;
+                      motorCommand = 2;
                       _sendJsonPacket();
                     },
                     child: Text('GO BACKWARD'),
@@ -293,13 +292,13 @@ class _WebSocketPageState extends State<MyCommunication> {
                     'PID',
                     textScaleFactor: 0.8,
                   ),
-                  value: mode,
+                  value: motorMode,
                   onChanged: (bool value) {
                     setState(() {
-                      mode = value;
+                      motorMode = value;
                     });
                     HapticFeedback.vibrate();
-                    print(mode);
+                    print(motorMode);
                     _sendJsonPacket();
                   },
                 ),
@@ -333,17 +332,18 @@ class _WebSocketPageState extends State<MyCommunication> {
                     'MOTORS ENABLED: ',
                     textScaleFactor: 0.8,
                   ),
-                  value: stepperEnable,
+                  value: motorEnable,
                   onChanged: (bool value) {
                     setState(() {
-                      stepperEnable = value;
+                      motorEnable = value;
                     });
                     HapticFeedback.vibrate();
-                    print(stepperEnable);
+                    print(motorEnable);
                     _sendJsonPacket();
                   },
                 ),
               ),
+              Expanded(flex: 1, child: Text('$battery')),
               Expanded(
                 flex: 1,
                 child: Padding(
