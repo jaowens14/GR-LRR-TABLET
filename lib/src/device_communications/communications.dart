@@ -24,9 +24,9 @@ class _WebSocketPageState extends State<MyCommunication> {
       TextEditingController(text: '0');
   TextEditingController _targetSpeedFieldController =
       TextEditingController(text: '0');
-  TextEditingController _kpFieldController = TextEditingController(text: '0');
-  TextEditingController _kiFieldController = TextEditingController(text: '0');
-  TextEditingController _kdFieldController = TextEditingController(text: '0');
+  TextEditingController _kpFieldController = TextEditingController(text: '100');
+  TextEditingController _kiFieldController = TextEditingController(text: '10');
+  TextEditingController _kdFieldController = TextEditingController(text: '20');
 
   Map<String, dynamic> _receivedData = {}; // Store parsed JSON data
   int motorCommand = 0;
@@ -40,6 +40,7 @@ class _WebSocketPageState extends State<MyCommunication> {
   bool debug = false;
 
   List<ScatterSpot> dataPoints = [];
+  List<ScatterSpot> uPoints = [];
   int count = 0;
 
   final player = AudioPlayer();
@@ -71,11 +72,11 @@ class _WebSocketPageState extends State<MyCommunication> {
                 radius: 4, color: Colors.green);
 
             dataPoints.add(newDataPoint);
-            if (dataPoints.length == 50) {
+            if (dataPoints.length == 100) {
               dataPoints.removeFirst();
             }
             count++;
-            if (count == 50) {
+            if (count == 100) {
               count = 0;
             }
           });
@@ -173,9 +174,9 @@ class _WebSocketPageState extends State<MyCommunication> {
                     ),
                   ),
                   minX: 0,
-                  maxX: 50,
+                  maxX: 100,
                   minY: 0,
-                  maxY: 5000, // Adjust the Y-axis range as needed
+                  maxY: 10, // Adjust the Y-axis range as needed
                   scatterSpots: dataPoints,
                 ),
               ),
@@ -343,7 +344,7 @@ class _WebSocketPageState extends State<MyCommunication> {
                   },
                 ),
               ),
-              Expanded(flex: 1, child: Text('$battery')),
+              Expanded(flex: 1, child: Text('battery: $battery')),
               Expanded(
                 flex: 1,
                 child: Padding(
