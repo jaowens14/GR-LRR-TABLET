@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:gr_lrr/src/app_navigation/app_bar.dart';
-import 'package:gr_lrr/src/app_navigation/app_drawer.dart';
-import 'package:gr_lrr/src/device_communications/communications.dart';
-import 'package:gr_lrr/src/video_stream/video_stream.dart';
+import '../../../src/app_navigation/app_bar.dart';
+import '../../../src/app_navigation/app_drawer.dart';
+import '../../../src/device_communications/communications.dart';
+import '../../../src/video_stream/video_stream.dart';
 
 class MyHome extends StatefulWidget {
   static const routeName = '/';

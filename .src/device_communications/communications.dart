@@ -1,10 +1,9 @@
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/io.dart';
 import 'dart:convert';
 import 'dart:async'; // Import the async library for Timer
-import 'package:gr_lrr/src/device_communications/device_ws_ip.dart';
+import '../../../src/device_communications/device_ws_ip.dart';
 import 'package:flutter/services.dart';
 import 'package:audioplayers/audioplayers.dart';
 

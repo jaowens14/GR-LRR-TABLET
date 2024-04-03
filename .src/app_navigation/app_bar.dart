@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:gr_lrr/src/app_navigation/title_setter.dart';
+import '../../../src/app_navigation/title_setter.dart';
 import 'package:provider/provider.dart';
-import 'package:gr_lrr/src/app_settings/settings_view.dart';
+import '../../../src/app_settings/settings_view.dart';
 
 class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   const MyAppBar({Key? key}) : super(key: key);

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:gr_lrr/src/video_stream/server_ws_ip.dart';
+import '../../../src/video_stream/server_ws_ip.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/status.dart' as status;
 

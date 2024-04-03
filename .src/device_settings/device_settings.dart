@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:gr_lrr/src/app_navigation/app_bar.dart';
-import 'package:gr_lrr/src/app_navigation/app_drawer.dart';
+import '../../../src/app_navigation/app_bar.dart';
+import '../../../src/app_navigation/app_drawer.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-import 'package:gr_lrr/src/device_communications/device_ws_ip.dart';
+import '../../../src/device_communications/device_ws_ip.dart';
 
 class Addresses {
   final List addrs;

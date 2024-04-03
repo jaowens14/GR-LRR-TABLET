@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gr_lrr/src/app_navigation/app_drawer.dart';
+import '../../../src/app_navigation/app_drawer.dart';
 
 import 'settings_controller.dart';
 import '../app_navigation/app_bar.dart';
