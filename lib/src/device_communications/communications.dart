@@ -22,11 +22,12 @@ class _WebSocketPageState extends State<MyCommunication> {
       TextEditingController(text: '0');
   TextEditingController _setpointFieldController =
       TextEditingController(text: '0');
-  TextEditingController _targetSpeedFieldController =
+  TextEditingController _targetGlueHeightFieldController =
       TextEditingController(text: '0');
-  TextEditingController _kpFieldController = TextEditingController(text: '100');
+  TextEditingController _kpFieldController =
+      TextEditingController(text: '0.01');
   TextEditingController _kiFieldController = TextEditingController(text: '10');
-  TextEditingController _kdFieldController = TextEditingController(text: '20');
+  TextEditingController _kdFieldController = TextEditingController(text: '5');
 
   Map<String, dynamic> _receivedData = {}; // Store parsed JSON data
   int motorCommand = 0;
@@ -108,7 +109,7 @@ class _WebSocketPageState extends State<MyCommunication> {
   void _sendJsonPacket() {
     final String motorSpeed = _speedFieldController.text;
     final String setpoint = _setpointFieldController.text;
-    final String motorTargetSpeed = _targetSpeedFieldController.text;
+    final String targetGlueHeight = _targetGlueHeightFieldController.text;
     final String kp = _kpFieldController.text;
     final String ki = _kiFieldController.text;
     final String kd = _kdFieldController.text;
@@ -118,7 +119,7 @@ class _WebSocketPageState extends State<MyCommunication> {
       'motorSpeed': motorSpeed,
       'motorMode': motorMode,
       'motorEnable': motorEnable,
-      'targetMotorSpeed': motorTargetSpeed,
+      'targetGlueHeight': targetGlueHeight,
       'PID_setpoint': setpoint,
       'PID_Kp': kp,
       'PID_Ki': ki,
@@ -143,7 +144,7 @@ class _WebSocketPageState extends State<MyCommunication> {
     commandsChannel.sink.close();
     _speedFieldController.dispose();
     _setpointFieldController.dispose();
-    _targetSpeedFieldController.dispose();
+    _targetGlueHeightFieldController.dispose();
     _kpFieldController.dispose();
     _kiFieldController.dispose();
     _kdFieldController.dispose();
@@ -195,7 +196,8 @@ class _WebSocketPageState extends State<MyCommunication> {
                       Text('Stepper Command: $motorCommand'),
                       Text('Stepper Speed: ${_speedFieldController.text}'),
                       Text('Set Point: ${_setpointFieldController.text}'),
-                      Text('Target Speed:${_targetSpeedFieldController.text}'),
+                      Text(
+                          'Target Height:${_targetGlueHeightFieldController.text}'),
                       Text('Kp: ${_kpFieldController.text}'),
                       Text('Ki: ${_kiFieldController.text}'),
                       Text('Kd: ${_kdFieldController.text}'),
@@ -384,19 +386,8 @@ class _WebSocketPageState extends State<MyCommunication> {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextField(
-                    controller: _setpointFieldController,
-                    decoration:
-                        InputDecoration(labelText: 'Target Ultrasonic Value'),
-                  ),
-                ),
-              ),
-              Expanded(
-                flex: 2,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextField(
-                    controller: _targetSpeedFieldController,
-                    decoration: InputDecoration(labelText: 'Target Speed'),
+                    controller: _targetGlueHeightFieldController,
+                    decoration: InputDecoration(labelText: 'targetGlueHeight'),
                   ),
                 ),
               ),
