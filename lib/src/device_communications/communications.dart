@@ -176,7 +176,7 @@ class _WebSocketPageState extends State<MyCommunication> {
                   minX: 0,
                   maxX: 100,
                   minY: 0,
-                  maxY: 10, // Adjust the Y-axis range as needed
+                  maxY: 300, // Adjust the Y-axis range as needed
                   scatterSpots: dataPoints,
                 ),
               ),
