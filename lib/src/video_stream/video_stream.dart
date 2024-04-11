@@ -58,75 +58,61 @@ class _VideoStreamState extends State<VideoStream> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        children: [
-          Expanded(
-            flex: 2,
-            child: Container(
-              decoration: BoxDecoration(
-                  border: Border.all(color: Colors.black, width: 2.0)),
-              child: FittedBox(
-                fit: BoxFit.contain,
-                child: SizedBox(
-                  width: desiredWidth,
-                  height: desiredHeight,
-                  child: video_isConnected
-                      ? StreamBuilder(
-                          stream: video_socket.stream,
-                          builder: (context, snapshot) {
-                            if (!snapshot.hasData) {
-                              return Center(
-                                child: SizedBox(
-                                  height: 40.0,
-                                  width: 40.0,
-                                  child: CircularProgressIndicator(),
-                                ),
-                              );
-                            }
+    return Column(
+      children: [
+        Container(
+          decoration:
+              BoxDecoration(border: Border.all(color: Colors.blueAccent)),
+          child: AspectRatio(
+            aspectRatio: 2,
+            child: video_isConnected
+                ? StreamBuilder(
+                    stream: video_socket.stream,
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) {
+                        return Center(
+                          child: SizedBox(
+                            height: 40.0,
+                            width: 40.0,
+                            child: CircularProgressIndicator(),
+                          ),
+                        );
+                      }
 
-                            if (snapshot.connectionState ==
-                                ConnectionState.done) {
-                              return const Center(
-                                child: Text("Connection Closed !"),
-                              );
-                            }
-                            //? Working for single frames
-                            return _resizeImage(
-                              Uint8List.fromList(
-                                base64Decode(
-                                  (snapshot.data.toString()),
-                                ),
-                              ),
-                            );
-                          },
-                        )
-                      : const Image(
-                          image: AssetImage("assets/images/vestas.png")),
-                ),
-              ),
-            ),
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        return const Center(
+                          child: Text("Connection Closed !"),
+                        );
+                      }
+                      //? Working for single frames
+                      return _resizeImage(
+                        Uint8List.fromList(
+                          base64Decode(
+                            (snapshot.data.toString()),
+                          ),
+                        ),
+                      );
+                    },
+                  )
+                : const Image(image: AssetImage("assets/images/vestas.png")),
           ),
-          Expanded(
-            flex: 1,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                ElevatedButton(
-                  onPressed: () => connect(context),
-                  style: Styles.buttonStyle,
-                  child: const Text("Connect"),
-                ),
-                ElevatedButton(
-                  onPressed: disconnect,
-                  style: Styles.buttonStyle,
-                  child: const Text("Disconnect"),
-                ),
-              ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            ElevatedButton(
+              onPressed: () => connect(context),
+              style: Styles.buttonStyle,
+              child: const Text("Connect"),
             ),
-          ),
-        ],
-      ),
+            ElevatedButton(
+              onPressed: disconnect,
+              style: Styles.buttonStyle,
+              child: const Text("Disconnect"),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

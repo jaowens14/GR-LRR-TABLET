@@ -5,7 +5,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-import 'package:gr_lrr/src/device_communications/device_ws_ip.dart';
+import 'package:gr_lrr/src/device_communications/DeviceWebsocketIp.dart';
 
 class Addresses {
   final List addrs;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gr_lrr/src/app_navigation/app_bar.dart';
 import 'package:gr_lrr/src/app_navigation/app_drawer.dart';
-import 'package:gr_lrr/src/device_communications/communications.dart';
+import 'package:gr_lrr/src/device_communications/CommunicationsWidget.dart';
 import 'package:gr_lrr/src/video_stream/video_stream.dart';
 
 class MyHome extends StatefulWidget {
@@ -27,18 +27,31 @@ class _MyHomeState extends State<MyHome> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: const MyAppBar(),
-      drawer: MyDrawer(),
-      body: Center(
-        child: Column(children: [
-          Expanded(
-            flex: 1,
-            child: _videoStream,
-          ),
-          Expanded(flex: 1, child: MyCommunication()),
-        ]),
-      ), // Use the videoStream from the widget parameter
+    return DefaultTextStyle(
+      style: Theme.of(context).textTheme.bodyMedium!,
+      child: LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints viewportConstraints) {
+          return Scaffold(
+            appBar: const MyAppBar(),
+            drawer: MyDrawer(),
+            body: Center(
+              child: SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight: viewportConstraints.maxHeight,
+                  ),
+                  child: Column(
+                    children: [
+                      _videoStream,
+                      MyCommunication(),
+                    ],
+                  ),
+                ),
+              ),
+            ), // Use the videoStream from the widget parameter
+          );
+        },
+      ),
     );
   }
 }
