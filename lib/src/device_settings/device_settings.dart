@@ -48,9 +48,8 @@ class _MyAPIState extends State<MyAPI> {
 
   Future<void> _setIP() async {
     setState(() {
-      DeviceWebsocketAddress.commandsURL = DeviceWebsocketAddress.start +
-          _ipFieldController.text +
-          DeviceWebsocketAddress.end;
+      DeviceAddresses.commandsURL =
+          DeviceAddresses.start + _ipFieldController.text + DeviceAddresses.end;
     });
   }
 
@@ -111,7 +110,7 @@ class _MyAPIState extends State<MyAPI> {
             flex: 1,
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text(DeviceWebsocketAddress.commandsURL),
+              child: Text(DeviceAddresses.commandsURL),
             ),
           ),
         ],

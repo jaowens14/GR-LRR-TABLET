@@ -27,8 +27,7 @@ class _WebSocketPageState extends State<MyCommunication> {
   bool debug = false;
 
   List<ScatterSpot> dataPoints = [];
-  List<ScatterSpot> uPoints = [];
-  int count = 0;
+  int count = 0; // chart count
 
   @override
   void initState() {
@@ -40,7 +39,7 @@ class _WebSocketPageState extends State<MyCommunication> {
   Future<void> _connectWebSocket() async {
     try {
       commandsChannel = IOWebSocketChannel.connect(
-        Uri.parse(DeviceWebsocketAddress.commandsURL),
+        Uri.parse(DeviceAddresses.commandsURL),
         pingInterval: Duration(milliseconds: 2000),
         connectTimeout: null,
       );
