@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gr_lrr/video_widget.dart';
 import 'communication.dart';
+import 'package:gr_lrr/appbar.dart';
 
 class ControlScreen extends StatefulWidget {
   @override
@@ -11,6 +12,9 @@ class _ControlScreenState extends State<ControlScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: BaseAppBar(
+        appBar: AppBar(),
+      ),
       body: Row(
         children: [
           Expanded(

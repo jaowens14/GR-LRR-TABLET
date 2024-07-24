@@ -1,129 +1,81 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'auth_service.dart';
 
+import 'package:gr_lrr/auth_service.dart';
 import 'package:gr_lrr/control_screen.dart';
+import 'package:gr_lrr/setup_screen.dart';
+import 'package:gr_lrr/login_screen.dart';
 
-enum TopLevelModules { control }
-
-bool logged = false;
+enum TopLevelModules { register, login, control, setup }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: MyAppContent(),
-    );
-  }
-}
-
-class MyAppContent extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp.router(
-      routerDelegate: AppRouterDelegate(),
-      routeInformationParser: AppRouteInformationParser(),
+      home: Builder(
+        builder: (context) => MaterialApp.router(
+          routerDelegate: AppRouterDelegate(),
+          routeInformationParser: AppRouteInformationParser(),
+        ),
+      ),
     );
   }
 }
 
 class AppRouterDelegate extends RouterDelegate<TopLevelModules>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<TopLevelModules> {
-  TopLevelModules _screen = TopLevelModules.control;
+  @override
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+  TopLevelModules _screen = TopLevelModules.login;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-          title: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Text('GR-LRR CONTROL'),
-          //IconButton(
-          //  icon: Icon(Icons.login_rounded),
-          //  onPressed: () {
-          //    _setNewRoutePath(TopLevelModules.home);
-          //  },
-          //  tooltip: 'login',
-          //),
-          //IconButton(
-          //  icon: Icon(Icons.login_rounded),
-          //  onPressed: () {
-          //    _setNewRoutePath(TopLevelModules.login);
-          //  },
-          //  tooltip: 'login',
-          //),
-          IconButton(
-            icon: Icon(Icons.dashboard_rounded),
-            onPressed: () {
-              _setNewRoutePath(TopLevelModules.control);
-              //Navigator.pop(context);
-            },
-            tooltip: 'control',
+    return Navigator(
+      key: navigatorKey,
+      pages: [
+        if (_screen == TopLevelModules.login)
+          MaterialPage(
+            key: ValueKey('login'),
+            child: LoginScreen(),
           ),
-          //IconButton(
-          //  icon: Icon(Icons.checklist_rounded),
-          //  onPressed: () {
-          //    _setNewRoutePath(TopLevelModules.setup);
-          //  },
-          //  tooltip: 'setup',
-          //),
-        ],
-      )),
-      body: Navigator(
-        key: navigatorKey,
-        pages: [
-          //MaterialPage(
-          //  key: ValueKey('HomeScreen'),
-          //  child: HomeScreen(),
-          //),
-          //if (_screen == TopLevelModules.login)
-          //  MaterialPage(
-          //    key: ValueKey('LoginScreen'),
-          //    child: LoginScreen(),
-          //  ),
-          if (_screen == TopLevelModules.control)
-            MaterialPage(
-              key: ValueKey('dogbonesScreen'),
-              child: ControlScreen(),
-            ),
-          //if (_screen == TopLevelModules.setup)
-          //  MaterialPage(
-          //    key: ValueKey('SetupScreen'),
-          //    child: SetupScreen(),
-          //  ),
-        ],
-        onPopPage: (route, result) {
-          // Handle pop actions
-          return route.didPop(result);
-        },
-      ),
+        if (_screen == TopLevelModules.control)
+          MaterialPage(
+            key: ValueKey('ControlScreen'),
+            child: ControlScreen(),
+          ),
+        if (_screen == TopLevelModules.setup)
+          MaterialPage(
+            key: ValueKey('SetupScreen'),
+            child: SetupScreen(),
+          ),
+      ],
+      onPopPage: (route, result) {
+        // Handle pop actions
+        return route.didPop(result);
+      },
     );
   }
 
-  void _setNewRoutePath(TopLevelModules configuration) {
-    logged = true;
-    if (logged) {
+  @override
+  Future<void> setNewRoutePath(TopLevelModules configuration) async {
+    final context = navigatorKey.currentContext;
+    if (context == null) return;
+
+    final authService = Provider.of<AuthService>(context, listen: false);
+
+    // Only update the screen configuration if the user is logged in
+    if (authService.loggedIn) {
       if (_screen != configuration) {
         _screen = configuration;
         notifyListeners();
       }
     } else {
-      _screen = TopLevelModules.control;
+      // Redirect to login screen if the user is not logged in
+      _screen = TopLevelModules.login;
       notifyListeners();
     }
   }
-
-  @override
-  TopLevelModules get currentConfiguration => _screen;
-
-  @override
-  Future<void> setNewRoutePath(TopLevelModules configuration) async {
-    _setNewRoutePath(configuration);
-  }
-
-  @override
-  GlobalKey<NavigatorState>? get navigatorKey => GlobalKey<NavigatorState>();
 }
 
 class AppRouteInformationParser
@@ -132,14 +84,12 @@ class AppRouteInformationParser
   Future<TopLevelModules> parseRouteInformation(
       RouteInformation routeInformation) async {
     switch (routeInformation.uri.path) {
-      case '/':
+      case '/login':
+        return TopLevelModules.login;
+      case '/control':
         return TopLevelModules.control;
-      //case '/login':
-      //  return TopLevelModules.login;
-      //case '/control':
-      //  return TopLevelModules.control;
-      //case '/setup':
-      //  return TopLevelModules.setup;
+      case '/setup':
+        return TopLevelModules.setup;
       default:
         return TopLevelModules.control;
     }
@@ -148,24 +98,23 @@ class AppRouteInformationParser
   @override
   RouteInformation restoreRouteInformation(TopLevelModules configuration) {
     switch (configuration) {
-      //case TopLevelModules.control:
-      //  return RouteInformation(uri: Uri.parse('/'));
-//
-      //case TopLevelModules.login:
-      //  return RouteInformation(uri: Uri.parse('/login'));
-
+      case TopLevelModules.login:
+        return RouteInformation(uri: Uri.parse('/login'));
       case TopLevelModules.control:
         return RouteInformation(uri: Uri.parse('/control'));
-
-      //case TopLevelModules.setup:
-      //  return RouteInformation(uri: Uri.parse('/setup'));
-      //default:
-      //  return RouteInformation(uri: Uri.parse('/'));
+      case TopLevelModules.setup:
+        return RouteInformation(uri: Uri.parse('/setup'));
+      default:
+        return RouteInformation(uri: Uri.parse('/login'));
     }
   }
 }
 
-void main() {
+AppRouterDelegate getRouterDelegate(BuildContext context) {
+  return Router.of(context).routerDelegate as AppRouterDelegate;
+}
+
+void main() async {
   runApp(
     ChangeNotifierProvider(
       create: (context) => AuthService(),
