@@ -21,7 +21,7 @@ class CommunicationData {
   bool estop = false;
   int uptime = 0;
   bool debug = false;
-  bool deviceIsConnected = false;
+  bool deviceIsConnected = true;
 
   late Map<String, dynamic> cameraData;
   int leftPercent = 0;
