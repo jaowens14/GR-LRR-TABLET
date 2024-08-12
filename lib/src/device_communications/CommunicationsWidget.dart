@@ -89,7 +89,11 @@ class _WebSocketPageState extends State<MyCommunication> {
   }
 
   void _sendJsonPacket() {
-    final String motorSpeed = commData.speedField.text;
+    final String motorSpeed1 = commData.speedField1.text;
+    final String motorSpeed2 = commData.speedField2.text;
+    final String motorSpeed3 = commData.speedField3.text;
+    final String motorSpeed4 = commData.speedField4.text;
+
     final String targetGlueHeight = commData.targetGlueHeightField.text;
 
     final String UT_kp = commData.UTkpField.text;
@@ -101,11 +105,16 @@ class _WebSocketPageState extends State<MyCommunication> {
     final String M_kd = commData.MkdField.text;
 
     final String wheelDiameter = commData.wheelDiameterField.text;
+    final String messageType = commData.messageType;
 
     final Map<String, dynamic> packet = {
+      'msgtyp': messageType,
       'wheelDiameter': wheelDiameter,
       'motorDirection': commData.motorCommand,
-      'motorSpeed': motorSpeed, // setpoint for motor pid
+      'motorSpeed1': motorSpeed1, // setpoint for motor pid
+      'motorSpeed2': motorSpeed2,
+      'motorSpeed3': motorSpeed3, // setpoint for motor pid
+      'motorSpeed4': motorSpeed4,
       'motorMode': commData.motorMode,
       'motorEnable': commData.motorEnable,
       'targetGlueHeight': targetGlueHeight, //setpoint for glue height pid
@@ -133,7 +142,11 @@ class _WebSocketPageState extends State<MyCommunication> {
   @override
   void dispose() {
     commandsChannel.sink.close();
-    commData.speedField.dispose();
+    commData.speedField1.dispose();
+    commData.speedField2.dispose();
+    commData.speedField3.dispose();
+    commData.speedField4.dispose();
+
     commData.setpointField.dispose();
     commData.targetGlueHeightField.dispose();
     commData.UTkpField.dispose();

@@ -19,7 +19,8 @@ class DebugWidget extends StatelessWidget {
           children: [
             Text('Sent JSON Packet:'),
             Text('Motor Command: ${communicationData.motorCommand}'),
-            Text('Motor Speed: ${communicationData.speedField.text}'),
+            Text('Motor Speed 1: ${communicationData.speedField1.text}'),
+            Text('Motor Speed 2: ${communicationData.speedField2.text}'),
             Text(
                 'Target Height : ${communicationData.targetGlueHeightField.text}'),
             Text('UT Kp: ${communicationData.UTkpField.text}'),

@@ -52,6 +52,7 @@ class _ControlsWidgetState extends State<ControlsWidget> {
                       minimumSize: Size.fromHeight(75)),
                   onPressed: () {
                     HapticFeedback.vibrate();
+                    widget.communicationData.messageType = 'set';
                     widget.communicationData.motorCommand = 1;
                     widget.sendJsonPacket();
                   },
@@ -69,10 +70,10 @@ class _ControlsWidgetState extends State<ControlsWidget> {
                       minimumSize: Size.fromHeight(75)),
                   onPressed: () {
                     HapticFeedback.vibrate();
-                    widget.communicationData.motorCommand = 2;
+                    widget.communicationData.messageType = "get";
                     widget.sendJsonPacket();
                   },
-                  child: Text('GO BACKWARD'),
+                  child: Text('SEND GET MESSAGE'),
                 ),
               ),
             ),

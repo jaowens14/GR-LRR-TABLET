@@ -65,8 +65,38 @@ class PidWidget extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextField(
-                  controller: communicationData.speedField,
-                  decoration: InputDecoration(labelText: 'Speed (m/s)'),
+                  controller: communicationData.speedField1,
+                  decoration: InputDecoration(labelText: 'Speed 1 (m/s)'),
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  controller: communicationData.speedField2,
+                  decoration: InputDecoration(labelText: 'Speed 2 (m/s)'),
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  controller: communicationData.speedField3,
+                  decoration: InputDecoration(labelText: 'Speed 3 (m/s)'),
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  controller: communicationData.speedField4,
+                  decoration: InputDecoration(labelText: 'Speed 4 (m/s)'),
                 ),
               ),
             ),
