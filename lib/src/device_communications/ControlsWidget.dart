@@ -35,7 +35,11 @@ class _ControlsWidgetState extends State<ControlsWidget> {
                       minimumSize: Size.fromHeight(75)),
                   onPressed: () {
                     HapticFeedback.vibrate();
-                    widget.communicationData.motorCommand = 0;
+                    widget.communicationData.speedField1.text = '0.0';
+                    widget.communicationData.speedField2.text = '0.0';
+                    widget.communicationData.speedField3.text = '0.0';
+                    widget.communicationData.speedField4.text = '0.0';
+
                     widget.sendJsonPacket();
                   },
                   child: Text('STOP'),

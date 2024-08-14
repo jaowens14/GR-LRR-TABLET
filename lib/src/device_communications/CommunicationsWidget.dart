@@ -169,30 +169,6 @@ class _WebSocketPageState extends State<MyCommunication> {
         children: [
           Stack(
             children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: AspectRatio(
-                  aspectRatio: 2,
-                  child: ScatterChart(
-                    ScatterChartData(
-                      gridData: FlGridData(show: true),
-                      titlesData: FlTitlesData(show: true),
-                      borderData: FlBorderData(
-                        show: true,
-                        border: Border.all(
-                          color: const Color(0xff37434d),
-                          width: 1,
-                        ),
-                      ),
-                      minX: 0,
-                      maxX: 100,
-                      minY: 0,
-                      maxY: 300, // Adjust the Y-axis range as needed
-                      scatterSpots: dataPoints,
-                    ),
-                  ),
-                ),
-              ),
               Visibility(
                   visible: commData.debug,
                   child: DebugWidget(

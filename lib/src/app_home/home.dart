@@ -42,7 +42,7 @@ class _MyHomeState extends State<MyHome> {
                   ),
                   child: Column(
                     children: [
-                      _videoStream,
+                      SizedBox(width: 1200, height: 800, child: _videoStream),
                       MyCommunication(),
                     ],
                   ),

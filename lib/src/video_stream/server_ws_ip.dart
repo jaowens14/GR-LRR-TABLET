@@ -1,3 +1,3 @@
 class ServerWebsocketAddress {
-  static String videoWebsocketURL = "ws://10.42.0.1:5000";
+  static String videoWebsocketURL = "ws://grlrr:5000";
 }

@@ -38,7 +38,6 @@ class DebugWidget extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Received JSON Packet Fields:'),
             Text(
                 'Motor Command: ${communicationData.receivedData['motorDirection']}'),
             Text(
