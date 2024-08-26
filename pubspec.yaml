@@ -12,12 +12,12 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  web_socket_channel: ^2.1.0
-  package_info_plus: ^4.1.0
+  web_socket_channel: ^3.0.1
+  package_info_plus: ^8.0.2
   provider: ^6.0.5
   get_ip_address: ^0.0.6
-  fl_chart: ^0.41.0
-  audioplayers: ^5.2.1
+  fl_chart: ^0.68.0
+  audioplayers: ^6.0.0
 
   flutter_localizations:
     sdk: flutter
@@ -29,7 +29,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_lints: ^2.0.0
+  flutter_lints: ^4.0.0
 
 flutter:
   uses-material-design: true

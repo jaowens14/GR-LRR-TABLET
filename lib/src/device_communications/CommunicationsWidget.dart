@@ -49,9 +49,10 @@ class _WebSocketPageState extends State<MyCommunication> {
             commData.deviceIsConnected = true;
             commData.motorCommand = commData.receivedData['motorDirection'];
             commData.estop = commData.receivedData['estop'];
-            final newDataPoint = ScatterSpot(count.toDouble(),
-                commData.receivedData['ultrasonicValue'].toDouble(),
-                radius: 4, color: Colors.green);
+            final newDataPoint = ScatterSpot(
+              count.toDouble(),
+              commData.receivedData['ultrasonicValue'].toDouble(),
+            );
 
             dataPoints.add(newDataPoint);
             if (dataPoints.length == 100) {
